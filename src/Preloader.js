@@ -44,7 +44,8 @@ Game.Preloader.resources = {
         ['dot', 'assets/img/dot.png'],
         ['cherry', 'assets/img/cherry.png'],
         ['femur', 'assets/img/femur.png'],
-        ['ham', 'assets/img/ham.png']
+        ['ham', 'assets/img/ham.png'],
+        ['ghost', 'assets/img/ghost4.png']
     ],
 
     'audio': [
