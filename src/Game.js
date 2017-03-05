@@ -45,7 +45,6 @@ var player_data;
 var enemy_data= [
     make_enemy_data(9 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1),
     make_enemy_data(10 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1),
-    make_enemy_data(11 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1)
 ];
 var NUM_ENEMIES = enemy_data.length;
 var enemy_sprites = new Array(NUM_ENEMIES);
