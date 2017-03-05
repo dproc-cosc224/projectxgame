@@ -44,7 +44,7 @@ var player_data;
 
 var enemy_data= [
     make_enemy_data(9 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1),
-    make_enemy_data(10 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1),
+    make_enemy_data(10 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1)
 ];
 var NUM_ENEMIES = enemy_data.length;
 var enemy_sprites = new Array(NUM_ENEMIES);
@@ -126,7 +126,7 @@ Game.Game.prototype = {
         player.body.setSize(gridsize, gridsize, 0, 0);
 
         for(var i = 0; i < NUM_ENEMIES; i++) {
-            var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'ghost', 0);
+            var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
             enemy.anchor.setTo(0.5, 0.5);
             this.physics.arcade.enable(enemy);
             enemy.body.collideWorldBounds = true;
@@ -277,7 +277,7 @@ Game.Game.prototype = {
             }
         }else{
             // rotate the sprite
-            this.add.tween(sprite).to( {angle: this.getAngle(sprite, obj, obj.turning) }, obj.turnSpeed, "Linear", true);
+            //this.add.tween(sprite).to( {angle: this.getAngle(sprite, obj, obj.turning) }, obj.turnSpeed, "Linear", true);
         }
 
         obj.current = obj.turning;
