@@ -14,6 +14,7 @@ var map;
 var layer;
 var tiles;
 var cursors;
+var music;
 var player_startPosX = 18;
 var player_startPosY = 24;
 var wasd;
@@ -83,9 +84,11 @@ Game.Game.prototype = {
     create: function(game){
 
         player_data = make_player_data();
-        //set tile/grid size
 
         game.stage.smoothed = true;
+
+        music = game.add.audio('level_music');
+        music.play('', 0, 0.5, true);
 
         map = this.add.tilemap('pupmap', gridsize, gridsize);
         map.addTilesetImage('ptiles');
