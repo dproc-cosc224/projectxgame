@@ -66,7 +66,8 @@ Game.Preloader.resources = {
         ['down', 'assets/img/arrow_down.png', 20, 20],
         ['left', 'assets/img/arrow_left.png', 20, 20],
         ['right', 'assets/img/arrow_right.png', 20, 20],
-        ['up', 'assets/img/arrow_up.png', 20, 20]
+        ['up', 'assets/img/arrow_up.png', 20, 20],
+        ['dog', 'assets/img/dog.png', 64, 64]
     ]
 
 };

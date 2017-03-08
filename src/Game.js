@@ -125,6 +125,7 @@ Game.Game.prototype = {
         player.animations.add('walkUp', [6, 7, 8, 6], 20, true);
         player.animations.add('walkDown', [9, 10, 11, 10], 20, true);
 
+
         this.physics.arcade.enable(player);
         player.body.setSize(gridsize, gridsize, 0, 0);
 
@@ -287,27 +288,27 @@ Game.Game.prototype = {
 
     },
 
-    getAngle: function(sprite, obj, to) {
-        // use these for sprite rotations -- assumes that sprite starts facing to the right
-        var targetAngleTable = {};
-        targetAngleTable[Phaser.RIGHT] = 0;
-        targetAngleTable[Phaser.DOWN] = 90;
-        targetAngleTable[Phaser.LEFT] = 180;
-        targetAngleTable[Phaser.UP] = 270;
-
-        var curAngle = this.math.radToDeg(sprite.rotation);
-
-        var targetAngle = targetAngleTable[to];
-        var targetAngleNeg = targetAngle - 360;
-
-        var diffTurnRight = this.math.difference(targetAngle, curAngle);
-        var diffTurnLeft  = this.math.difference(targetAngleNeg, curAngle);
-
-        if(diffTurnLeft < diffTurnRight) {
-            return targetAngleNeg;
-        }
-        return targetAngle;
-    },
+    // getAngle: function(sprite, obj, to) {
+    //     // use these for sprite rotations -- assumes that sprite starts facing to the right
+    //     var targetAngleTable = {};
+    //     targetAngleTable[Phaser.RIGHT] = 0;
+    //     targetAngleTable[Phaser.DOWN] = 90;
+    //     targetAngleTable[Phaser.LEFT] = 180;
+    //     targetAngleTable[Phaser.UP] = 270;
+    //
+    //     var curAngle = this.math.radToDeg(sprite.rotation);
+    //
+    //     var targetAngle = targetAngleTable[to];
+    //     var targetAngleNeg = targetAngle - 360;
+    //
+    //     var diffTurnRight = this.math.difference(targetAngle, curAngle);
+    //     var diffTurnLeft  = this.math.difference(targetAngleNeg, curAngle);
+    //
+    //     if(diffTurnLeft < diffTurnRight) {
+    //         return targetAngleNeg;
+    //     }
+    //     return targetAngle;
+    // },
 
     checkDirection : function(sprite, obj, turningTo) {
         //3 conditions to check:
@@ -388,6 +389,10 @@ Game.Game.prototype = {
 
     },
 
+    enemyCollision: function (player, enemy){
+        this.gameOver();
+    },
+
     gameOver: function(){
         //stop the timer
         timer.stop();
@@ -414,11 +419,14 @@ Game.Game.prototype = {
 
         for(var i =0; i < NUM_ENEMIES; i++) {
             game.physics.arcade.collide(enemy_sprites[i], layer);
+            this.physics.arcade.overlap(player, enemy_sprites[i], this.enemyCollision, null, this);
         }
 
         //ensure the player interacts with the treat
         this.physics.arcade.overlap(player, treats, this.eatTreats, null, this);
         this.physics.arcade.overlap(player, sTreats, this.eatSTreats, null, this);
+
+
 
         //find out where player is with grid coordinates
         player_data.marker.x = this.math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
