@@ -15,16 +15,16 @@ var layer;
 var tiles;
 var cursors;
 var music;
-var player_startPosX = 18;
-var player_startPosY = 24;
+var player_startPosX = 8;
+var player_startPosY = 13;
 var wasd;
-var gridsize = 32;
+var gridsize = 64;
 var directions = [null, null, null, null];
 var opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
 var treats;
 var sTreats;
-var sTreatsIndex = 78;
-var safetile = 10;
+var sTreatsIndex = 5;
+var safetile = 7;
 
 //var upButton;
 //var downButton;
@@ -44,8 +44,8 @@ var player;
 var player_data;
 
 var enemy_data= [
-    make_enemy_data(9 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1),
-    make_enemy_data(10 * gridsize + gridsize/2, 11 * gridsize + gridsize/2, enemy_movement_function_1)
+    make_enemy_data(4 * gridsize + gridsize/2, 5 * gridsize + gridsize/2, enemy_movement_function_1),
+    make_enemy_data(3 * gridsize + gridsize/2, 5 * gridsize + gridsize/2, enemy_movement_function_1)
 ];
 var NUM_ENEMIES = enemy_data.length;
 var enemy_sprites = new Array(NUM_ENEMIES);
@@ -90,15 +90,17 @@ Game.Game.prototype = {
         music = game.add.audio('level_music');
         music.play('', 0, 0.5, true);
 
-        map = this.add.tilemap('pupmap', gridsize, gridsize);
-        map.addTilesetImage('ptiles');
+        // map = this.add.tilemap('pupmap', gridsize, gridsize);
+        // map.addTilesetImage('ptiles');
+        map = this.add.tilemap('testmap1', gridsize, gridsize);
+        map.addTilesetImage('land');
         layer = map.createLayer(0);
 
         treats = this.add.physicsGroup();
         sTreats = this.add.physicsGroup();
 
-        map.createFromTiles(safetile, safetile, 'femur', layer, treats);
-        map.createFromTiles(sTreatsIndex, safetile, 'ham', layer, sTreats);
+        map.createFromTiles(safetile, safetile, 'bone', layer, treats);
+        map.createFromTiles(sTreatsIndex, safetile, 'bigBone', layer, sTreats);
 
         treats.setAll('x', 6, false, false, 1);
         treats.setAll('y', 6, false, false, 1);
@@ -118,12 +120,16 @@ Game.Game.prototype = {
         timeText.visible = true;
 
         //create the player
-        player = this.add.sprite((player_startPosX * gridsize) + (gridsize/2), (player_startPosY * gridsize) + (gridsize/2), 'pup', 0);
+        player = this.add.sprite((player_startPosX * gridsize) + (gridsize/2), (player_startPosY * gridsize) + (gridsize/2), 'dog', 0);
         player.anchor.setTo(0.5, 0.5);
-        player.animations.add('walkLeft', [0, 1 , 2 , 1], 20, true);
-        player.animations.add('walkRight', [3, 4, 5, 3], 20, true);
-        player.animations.add('walkUp', [6, 7, 8, 6], 20, true);
-        player.animations.add('walkDown', [9, 10, 11, 10], 20, true);
+        player.animations.add('walkLeft', [0, 1 , 2 ,3 , 4, 5, 4, 3, 2, 1], 20, true);
+        player.animations.add('walkRight', [6, 7, 8, 9, 10, 11, 10, 9, 8, 7], 20, true);
+        player.animations.add('walkUp', [12, 13, 14, 15, 16, 17, 16, 15, 14, 13], 20, true);
+        player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 22, 21, 20, 19], 20, true);
+        // player.animations.add('walkLeft', [0, 1 , 2 , 1], 20, true);
+        // player.animations.add('walkRight', [3, 4, 5, 3], 20, true);
+        // player.animations.add('walkUp', [6, 7, 8, 6], 20, true);
+        // player.animations.add('walkDown', [9, 10, 11, 10], 20, true);
 
 
         this.physics.arcade.enable(player);
