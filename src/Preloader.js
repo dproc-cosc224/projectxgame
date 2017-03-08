@@ -46,7 +46,10 @@ Game.Preloader.resources = {
         ['femur', 'assets/img/femur.png'],
         ['ham', 'assets/img/ham.png'],
         ['ghost', 'assets/img/ghost4.png'],
-        ['vacuum', 'assets/img/vacuum.png']
+        ['vacuum', 'assets/img/vacuum.png'],
+        ['land', 'assets/img/land.png'],
+        ['bone', 'assets/img/bone.png'],
+        ['bigBone', 'assets/img/bigBone.png']
 
     ],
 
@@ -56,7 +59,8 @@ Game.Preloader.resources = {
 
     'tilemap': [
         ['map', 'assets/maps/map.csv'],
-        ['pupmap', 'assets/maps/pupmap.csv']
+        ['pupmap', 'assets/maps/pupmap.csv'],
+        ['testmap1', 'assets/maps/testmap1.csv']
 
 
     ],
