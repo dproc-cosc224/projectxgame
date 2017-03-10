@@ -15,16 +15,17 @@ var layer;
 var tiles;
 var cursors;
 var music;
-var player_startPosX = 8;
-var player_startPosY = 13;
+var player_startPosX;
+var player_startPosY;
 var wasd;
 var gridsize = 64;
 var directions = [null, null, null, null];
 var opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
 var treats;
 var sTreats;
-var sTreatsIndex = 5;
-var safetile = 7;
+var treatIndex;
+var sTreatsIndex;
+var safetile;
 
 // var upButton;
 // var downButton;
@@ -42,13 +43,13 @@ var gameOverText;
 
 var player;
 var player_data;
+var level;
+var enemyStartX;
+var enemyStartY;
 
-var enemy_data= [
-    make_enemy_data(4 * gridsize + gridsize/2, 5 * gridsize + gridsize/2, enemy_movement_function_1),
-    make_enemy_data(3 * gridsize + gridsize/2, 5 * gridsize + gridsize/2, enemy_movement_function_1)
-];
-var NUM_ENEMIES = enemy_data.length;
-var enemy_sprites = new Array(NUM_ENEMIES);
+var enemy_data;
+var NUM_ENEMIES;
+var enemy_sprites;
 
 // game entity object used for players and enemies
 function GameEntity(startX, startY, speed, threshold, current, turning, marker, turnPoint) {
@@ -83,9 +84,11 @@ Game.Game.prototype = {
         this.physics.startSystem(Phaser.Physics.ARCADE);
     },
 
-    create: function(game){
+    create: function(game) {
 
-        player_data = make_player_data();
+        level = 'pacmap';
+
+
 
         game.stage.smoothed = true;
 
@@ -94,22 +97,76 @@ Game.Game.prototype = {
 
         // map = this.add.tilemap('pupmap', gridsize, gridsize);
         // map.addTilesetImage('ptiles');
-        map = this.add.tilemap('testmap1', gridsize, gridsize);
-        map.addTilesetImage('land');
-        layer = map.createLayer(0);
 
-        treats = this.add.physicsGroup();
-        sTreats = this.add.physicsGroup();
 
-        map.createFromTiles(safetile, safetile, 'bone', layer, treats);
-        map.createFromTiles(sTreatsIndex, safetile, 'bigBone', layer, sTreats);
 
-        treats.setAll('x', 6, false, false, 1);
-        treats.setAll('y', 6, false, false, 1);
+        if (level == 'dog') {
 
-        sTreats.setAll('y', 9, false, false, 1);
+            map = this.add.tilemap('testmap1', gridsize, gridsize);
+            map.addTilesetImage('land');
+            layer = map.createLayer(0);
 
-        map.setCollisionByExclusion( [safetile] , true, layer);
+            player_startPosX = 8;
+            player_startPosY = 13;
+
+            enemyStartX = 4;
+            enemyStartY = 5;
+
+            enemy_data= [
+                make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
+                make_enemy_data(enemyStartX+1 * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+            ];
+            NUM_ENEMIES = enemy_data.length;
+            enemy_sprites = new Array(NUM_ENEMIES);
+
+            treatIndex = 7;
+            sTreatsIndex = 5;
+            safetile = 7;
+
+            treats = this.add.physicsGroup();
+            sTreats = this.add.physicsGroup();
+
+            map.createFromTiles(treatIndex, safetile, 'bone', layer, treats);
+            map.createFromTiles(sTreatsIndex, safetile, 'bigBone', layer, sTreats);
+
+        } else if (level == 'pacmap') {
+
+            map = this.add.tilemap('pmap', gridsize, gridsize);
+            map.addTilesetImage('cTile');
+            layer = map.createLayer(0);
+
+            player_startPosX = 8;
+            player_startPosY = 13;
+
+            enemyStartX = 4;
+            enemyStartY = 7;
+
+            enemy_data= [
+                make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
+                make_enemy_data(enemyStartX+1 * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+            ];
+            player_data = make_player_data();
+            NUM_ENEMIES = enemy_data.length;
+            enemy_sprites = new Array(NUM_ENEMIES);
+
+            treatIndex = 2;
+            sTreatsIndex = 8;
+            safetile = -1;
+
+            treats = this.add.physicsGroup();
+            sTreats = this.add.physicsGroup();
+
+            map.createFromTiles(treatIndex, safetile, 'dot', layer, treats);
+            map.createFromTiles(sTreatsIndex, safetile, 'bigDot', layer, sTreats);
+
+
+        }
+
+        //treats.setAll('x', 6, false, false, 1);
+        //treats.setAll('y', 6, false, false, 1);
+
+        //sTreats.setAll('y', 9, false, false, 1);
+        map.setCollisionByExclusion([safetile], true, layer);
 
         layer.resizeWorld();
 
@@ -118,16 +175,27 @@ Game.Game.prototype = {
         timer.loop(1000, this.updateCounter, this);
         timer.start();
         time = 20;
-        timeText = this.add.text(400, 32, 'Time Left : ' + time , { fontSize: '32px', fill: '#ffffff' } );
+        timeText = this.add.text(400, 32, 'Time Left : ' + time, {fontSize: '32px', fill: '#ffffff'});
         timeText.visible = true;
 
         //create the player
-        player = this.add.sprite((player_startPosX * gridsize) + (gridsize/2), (player_startPosY * gridsize) + (gridsize/2), 'dog', 0);
-        player.anchor.setTo(0.5, 0.5);
-        player.animations.add('walkLeft', [0, 1 , 2 ,3 , 4, 5, 4, 3, 2, 1], 20, true);
-        player.animations.add('walkRight', [6, 7, 8, 9, 10, 11, 10, 9, 8, 7], 20, true);
-        player.animations.add('walkUp', [12, 13, 14, 15, 16, 17, 16, 15, 14, 13], 20, true);
-        player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 22, 21, 20, 19], 20, true);
+        if (level == 'dog') {
+
+            player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'dog', 0);
+            player.anchor.setTo(0.5, 0.5);
+            player.animations.add('walkLeft', [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], 20, true);
+            player.animations.add('walkRight', [6, 7, 8, 9, 10, 11, 10, 9, 8, 7], 20, true);
+            player.animations.add('walkUp', [12, 13, 14, 15, 16, 17, 16, 15, 14, 13], 20, true);
+            player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 22, 21, 20, 19], 20, true);
+        }else if(level == 'pacmap'){
+
+            player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites', 38);
+            player.anchor.setTo(0.5, 0.5);
+            player.animations.add('walkLeft', [38, 39], 10, true);
+            player.animations.add('walkRight', [10, 11], 10, true);
+            player.animations.add('walkUp', [52, 53], 10, true);
+            player.animations.add('walkDown', [24, 25],10, true);
+        }
         // player.animations.add('walkLeft', [0, 1 , 2 , 1], 20, true);
         // player.animations.add('walkRight', [3, 4, 5, 3], 20, true);
         // player.animations.add('walkUp', [6, 7, 8, 6], 20, true);
@@ -139,7 +207,11 @@ Game.Game.prototype = {
 
         // create enemies
         for(var i = 0; i < NUM_ENEMIES; i++) {
-            var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
+            if (level == 'dog') {
+                var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
+            }else if(level == 'pacmap'){
+                var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites', 0);
+            }
             enemy.anchor.setTo(0.5, 0.5);
             this.physics.arcade.enable(enemy);
             enemy.body.collideWorldBounds = true;
@@ -473,7 +545,7 @@ Game.Game.prototype = {
         if(treats.total === 0  && sTreats.total == 0){
             // treats.callAll('revive');
             // sTreats.callAll('revive');
-            this.gameOver();
+            //this.gameOver();
         }
 
         for(var i = 0; i < NUM_ENEMIES; i++) {

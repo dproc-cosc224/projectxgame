@@ -42,6 +42,7 @@ Game.Preloader.resources = {
         ['ptiles', 'assets/img/TileCraftGroundSet.png'],
         ['pacman', 'assets/img/pac.png'],
         ['dot', 'assets/img/dot.png'],
+        ['bigDot', 'assets/img/bigDot.png'],
         ['cherry', 'assets/img/cherry.png'],
         ['femur', 'assets/img/femur.png'],
         ['ham', 'assets/img/ham.png'],
@@ -49,7 +50,8 @@ Game.Preloader.resources = {
         ['vacuum', 'assets/img/vacuum.png'],
         ['land', 'assets/img/land.png'],
         ['bone', 'assets/img/bone.png'],
-        ['bigBone', 'assets/img/bigBone.png']
+        ['bigBone', 'assets/img/bigBone.png'],
+        ['cTile', 'assets/img/chompermazetiles.png']
 
     ],
 
@@ -60,8 +62,8 @@ Game.Preloader.resources = {
     'tilemap': [
         ['map', 'assets/maps/map.csv'],
         ['pupmap', 'assets/maps/pupmap.csv'],
-        ['testmap1', 'assets/maps/testmap1.csv']
-
+        ['testmap1', 'assets/maps/testmap1.csv'],
+        ['pmap', 'assets/maps/pmap.csv']
 
     ],
 
@@ -71,7 +73,8 @@ Game.Preloader.resources = {
         ['left', 'assets/img/arrow_left.png', 20, 20],
         ['right', 'assets/img/arrow_right.png', 20, 20],
         ['up', 'assets/img/arrow_up.png', 20, 20],
-        ['dog', 'assets/img/dog.png', 64, 64]
+        ['dog', 'assets/img/dog.png', 64, 64],
+        ['csprites','assets/img/chompersprites.png', 64, 64]
     ]
 
 };
