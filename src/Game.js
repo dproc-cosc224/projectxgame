@@ -86,9 +86,11 @@ Game.Game.prototype = {
 
     create: function(game) {
 
-        level = 'pacmap';
-
-
+        if('level' in queryDict) {
+            level = queryDict['level'];
+        }else{
+            level = 'pacmap';
+        }
 
         game.stage.smoothed = true;
 
@@ -114,8 +116,9 @@ Game.Game.prototype = {
 
             enemy_data= [
                 make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
-                make_enemy_data(enemyStartX+1 * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
             ];
+            player_data = make_player_data();
             NUM_ENEMIES = enemy_data.length;
             enemy_sprites = new Array(NUM_ENEMIES);
 
@@ -143,7 +146,7 @@ Game.Game.prototype = {
 
             enemy_data= [
                 make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
-                make_enemy_data(enemyStartX+1 * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
             ];
             player_data = make_player_data();
             NUM_ENEMIES = enemy_data.length;
@@ -606,21 +609,22 @@ function enemy_movement_function_1(game, sprite, obj) {
         seen[x][y] = true;
 
 
-        var d = [];
 
-        d[Phaser.LEFT] = map.getTileLeft(index, x, y);
-        d[Phaser.RIGHT] = map.getTileRight(index, x, y);
-        d[Phaser.UP] = map.getTileAbove(index, x, y);
-        d[Phaser.DOWN] = map.getTileBelow(index, x, y);
+        directions[Phaser.LEFT] = map.getTileLeft(index, x, y);
+        directions[Phaser.RIGHT] = map.getTileRight(index, x, y);
+        directions[Phaser.UP] = map.getTileAbove(index, x, y);
+        directions[Phaser.DOWN] = map.getTileBelow(index, x, y);
 
         // TODO
         // make sure we don't collide with other ghosts
+        var running = player_data.powered_up > 0;
 
-        if(d[Phaser.LEFT] != null && d[Phaser.LEFT].index == safetile){
+        if(directions[Phaser.LEFT] != null && directions[Phaser.LEFT].index == safetile){
             if(x - 1 == g_x && y == g_y){
                 target = Phaser.RIGHT;
-                if(player_data.powered_up > 0) {
+                if (running){
                     target = Phaser.LEFT;
+
                 }
                 if(obj.current != target) {
                     game.checkDirection(sprite, obj, target);
@@ -636,10 +640,10 @@ function enemy_movement_function_1(game, sprite, obj) {
             }
         }
 
-        if(d[Phaser.RIGHT] != null && d[Phaser.RIGHT].index == safetile){
+        if(directions[Phaser.RIGHT] != null && directions[Phaser.RIGHT].index == safetile){
             if(x + 1 == g_x && y == g_y){
                 target = Phaser.LEFT;
-                if(player_data.powered_up > 0) {
+                if(running) {
                     target = Phaser.RIGHT;
                 }
                 if(obj.current != target) {
@@ -656,10 +660,10 @@ function enemy_movement_function_1(game, sprite, obj) {
             }
         }
 
-        if(d[Phaser.UP] != null && d[Phaser.UP].index == safetile) {
+        if(directions[Phaser.UP] != null && directions[Phaser.UP].index == safetile) {
             if(x == g_x && y - 1 == g_y){
                 target = Phaser.DOWN;
-                if(player_data.powered_up > 0) {
+                if(running) {
                     target = Phaser.UP;
                 }
                 if(obj.current != target){
@@ -675,10 +679,10 @@ function enemy_movement_function_1(game, sprite, obj) {
                 q.push([x, y - 1]);
             }
         }
-        if(d[Phaser.DOWN] != null && d[Phaser.DOWN].index == safetile) {
+        if(directions[Phaser.DOWN] != null && directions[Phaser.DOWN].index == safetile) {
             if(x == g_x && y + 1 == g_y){
                 target = Phaser.UP;
-                if(player_data.powered_up > 0) {
+                if(running) {
                     target = Phaser.DOWN;
                 }
                 if(obj.current != target) {
