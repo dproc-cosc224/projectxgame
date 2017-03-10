@@ -165,6 +165,7 @@ Game.Game.prototype = {
 
         }
 
+
         //treats.setAll('x', 6, false, false, 1);
         //treats.setAll('y', 6, false, false, 1);
 
@@ -577,11 +578,13 @@ Game.Game.prototype = {
 
 function enemy_movement_function_1(game, sprite, obj) {
 
-    var g_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
-    var g_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
+    var enemy_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
 
-    var p_x = Phaser.Math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
-    var p_y = Phaser.Math.snapToFloor(Math.floor(player.y), gridsize) / gridsize;
+
+    var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
+
+    var player_x = Phaser.Math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
+    var player_y = Phaser.Math.snapToFloor(Math.floor(player.y), gridsize) / gridsize;
 
     var index = layer.index;
 
@@ -590,112 +593,122 @@ function enemy_movement_function_1(game, sprite, obj) {
         seen[i] = new Array(HEIGHT).fill(false);
     }
 
-    var q = [];
-    q.push([p_x, p_y]);
+    var running = player_data.powered_up > 0;
 
-    while(q.length != 0) {
+    var queue = [];
+    queue.push([player_x, player_y]);
+
+    while(queue != null && queue.length != 0) {
 
         // Stack vs Queue, pop will give you a DFS, shift will give you a BFS.
-        var cur = 0;
-        if(obj == enemy_data[0] || player_data.powered_up > 0){
-            cur = q.shift();
+        var current;
+        if(running || obj == enemy_data[0] ){
+            //bfs
+            current = queue.shift();
         }else{
-            cur = q.pop();
+            //dfs
+            current = queue.pop();
         }
-        var x = cur[0];
-        var y = cur[1];
+        var current_x = current[0];
+        var current_y = current[1];
         var target = Phaser.NONE;
 
-        seen[x][y] = true;
+        seen[current_x][current_y] = true;
 
-
-
-        directions[Phaser.LEFT] = map.getTileLeft(index, x, y);
-        directions[Phaser.RIGHT] = map.getTileRight(index, x, y);
-        directions[Phaser.UP] = map.getTileAbove(index, x, y);
-        directions[Phaser.DOWN] = map.getTileBelow(index, x, y);
+        directions[Phaser.LEFT] = map.getTileLeft(index, current_x, current_y);
+        directions[Phaser.RIGHT] = map.getTileRight(index, current_x, current_y);
+        directions[Phaser.UP] = map.getTileAbove(index, current_x, current_y);
+        directions[Phaser.DOWN] = map.getTileBelow(index, current_x, current_y);
 
         // TODO
         // make sure we don't collide with other ghosts
-        var running = player_data.powered_up > 0;
 
         if(directions[Phaser.LEFT] != null && directions[Phaser.LEFT].index == safetile){
-            if(x - 1 == g_x && y == g_y){
+            if(current_x - 1 == enemy_x && current_y == enemy_y){
                 target = Phaser.RIGHT;
                 if (running){
                     target = Phaser.LEFT;
 
                 }
-                if(obj.current != target) {
-                    game.checkDirection(sprite, obj, target);
-                    if(obj.turning != Phaser.NONE){
-                        game.turn(sprite, obj);
+                if(!running || (running && map.getTileLeft(index, enemy_x, enemy_y).index == safetile)){
+                    if(obj.current != target) {
+                        game.checkDirection(sprite, obj, target);
+                        if(obj.turning != Phaser.NONE){
+                            game.turn(sprite, obj);
+                        }
                     }
+                    break;
                 }
-                break;
+
             }
-            if(! seen[x-1][y]){
-                seen[x-1][y] = true;
-                q.push([x - 1, y]);
+            if(! seen[current_x-1][current_y]){
+                seen[current_x-1][current_y] = true;
+                queue.push([current_x - 1, current_y]);
             }
         }
 
         if(directions[Phaser.RIGHT] != null && directions[Phaser.RIGHT].index == safetile){
-            if(x + 1 == g_x && y == g_y){
+            if(current_x + 1 == enemy_x && current_y == enemy_y){
                 target = Phaser.LEFT;
                 if(running) {
                     target = Phaser.RIGHT;
                 }
-                if(obj.current != target) {
-                    game.checkDirection(sprite, obj, target);
-                    if(obj.turning != Phaser.NONE){
-                        game.turn(sprite, obj);
+                if(!running || (running && map.getTileRight(index, enemy_x, enemy_y).index == safetile)){
+                    if(obj.current != target) {
+                        game.checkDirection(sprite, obj, target);
+                        if(obj.turning != Phaser.NONE){
+                            game.turn(sprite, obj);
+                        }
                     }
+                    break;
                 }
-                break;
             }
-            if(! seen[x+1][y]){
-                seen[x+1][y] = true;
-                q.push([x+1, y]);
+            if(! seen[current_x+1][current_y]){
+                seen[current_x+1][current_y] = true;
+                queue.push([current_x+1, current_y]);
             }
         }
 
         if(directions[Phaser.UP] != null && directions[Phaser.UP].index == safetile) {
-            if(x == g_x && y - 1 == g_y){
+            if(current_x == enemy_x && current_y - 1 == enemy_y){
                 target = Phaser.DOWN;
                 if(running) {
                     target = Phaser.UP;
                 }
-                if(obj.current != target){
-                    game.checkDirection(sprite, obj, target);
-                    if(obj.turning != Phaser.NONE) {
-                        game.turn(sprite, obj);
+                if(!running || (running && map.getTileAbove(index, enemy_x, enemy_y).index == safetile)){
+                    if(obj.current != target){
+                        game.checkDirection(sprite, obj, target);
+                        if(obj.turning != Phaser.NONE) {
+                            game.turn(sprite, obj);
+                        }
                     }
+                    break;
                 }
-                break;
             }
-            if(! seen[x][y - 1]){
-                seen[x][y - 1] = true;
-                q.push([x, y - 1]);
+            if(! seen[current_x][current_y - 1]){
+                seen[current_x][current_y - 1] = true;
+                queue.push([current_x, current_y - 1]);
             }
         }
         if(directions[Phaser.DOWN] != null && directions[Phaser.DOWN].index == safetile) {
-            if(x == g_x && y + 1 == g_y){
+            if(current_x == enemy_x && current_y + 1 == enemy_y){
                 target = Phaser.UP;
                 if(running) {
                     target = Phaser.DOWN;
                 }
-                if(obj.current != target) {
-                    game.checkDirection(sprite, obj, target);
-                    if(obj.turning != Phaser.NONE){
-                        game.turn(sprite, obj);
+                if(!running || (running && map.getTileBelow(index, enemy_x, enemy_y).index == safetile)){
+                    if(obj.current != target) {
+                        game.checkDirection(sprite, obj, target);
+                        if(obj.turning != Phaser.NONE){
+                            game.turn(sprite, obj);
+                        }
                     }
+                    break;
                 }
-                break;
             }
-            if(! seen[x][y + 1]){
-                seen[x][y + 1] = true;
-                q.push([x, y + 1]);
+            if(! seen[current_x][current_y + 1]){
+                seen[current_x][current_y + 1] = true;
+                queue.push([current_x, current_y + 1]);
             }
         }
     }
