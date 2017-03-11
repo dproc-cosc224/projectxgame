@@ -115,6 +115,7 @@ Game.Game.prototype = {
                 make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
                 make_enemy_data(enemyStartX+1 * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
             ];
+            player_data = make_player_data();
             NUM_ENEMIES = enemy_data.length;
             enemy_sprites = new Array(NUM_ENEMIES);
 
