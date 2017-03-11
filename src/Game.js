@@ -50,6 +50,7 @@ var enemyStartY;
 var enemy_data;
 var NUM_ENEMIES;
 var enemy_sprites;
+var huntMode;
 
 // game entity object used for players and enemies
 function GameEntity(startX, startY, speed, threshold, current, turning, marker, turnPoint) {
@@ -65,7 +66,8 @@ function GameEntity(startX, startY, speed, threshold, current, turning, marker, 
 
 //creates the player data
 function make_player_data() {
-    var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 20, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
+
+    var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     p_data.powered_up = 0;
     return p_data;
 }
@@ -215,6 +217,9 @@ Game.Game.prototype = {
                 var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
             }else if(level == 'pacmap'){
                 var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites', 0);
+                enemy.animations.add('moving', [0, 1], 10, true);
+                enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
+                enemy.play('moving');
             }
             enemy.anchor.setTo(0.5, 0.5);
             this.physics.arcade.enable(enemy);
@@ -231,6 +236,8 @@ Game.Game.prototype = {
         //set the gameOverText and set it to not visible
         gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , { fontSize: '32px', fill: '#ffffff'});
         gameOverText.visible = false;
+
+        huntMode = false;
 
         // upButton = this.add.button((9.5 * gridsize), (23 * gridsize), 'up', this.actionOnClick, this);
         // upButton.scale.setTo(2.5,2.5);
@@ -480,12 +487,28 @@ Game.Game.prototype = {
         score += 50;
         scoreText.text = 'Score: ' + score;
 
+        //turn on huntMode
+        huntMode = true;
+        if(level == 'pacmap'){
+            for(var i =0; i < NUM_ENEMIES; i++) {
+                enemy_sprites[i].play('runAway');
+            }
+        }
+
+
     },
 
     enemyCollision: function (player, enemy){
-        // TODO
-        // Save their score
-        this.gameOver();
+        if(huntMode){
+            enemy.kill();
+
+            //update the score
+            score += 500;
+            scoreText.text = 'Score: ' + score;
+
+        }else {
+            this.gameOver();
+        }
     },
 
     gameOver: function(){
