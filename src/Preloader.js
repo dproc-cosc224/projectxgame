@@ -43,6 +43,10 @@ Game.Preloader.resources = {
         ['pacman', 'assets/img/pac.png'],
         ['dot', 'assets/img/dot.png'],
         ['bigDot', 'assets/img/bigDot.png'],
+        ['dot48', 'assets/img/dot48.png'],
+        ['bigDot48', 'assets/img/bigDot48.png'],
+        ['dot32', 'assets/img/dot32.png'],
+        ['bigDot32', 'assets/img/bigDot32.png'],
         ['cherry', 'assets/img/cherry.png'],
         ['femur', 'assets/img/femur.png'],
         ['ham', 'assets/img/ham.png'],
@@ -51,7 +55,9 @@ Game.Preloader.resources = {
         ['land', 'assets/img/land.png'],
         ['bone', 'assets/img/bone.png'],
         ['bigBone', 'assets/img/bigBone.png'],
-        ['cTile', 'assets/img/chompermazetiles.png']
+        ['cTile', 'assets/img/chompermazetiles.png'],
+        ['cTile48', 'assets/img/chompermazetiles48.png'],
+        ['cTile32', 'assets/img/chompermazetiles32.png']
 
     ],
 
@@ -63,7 +69,10 @@ Game.Preloader.resources = {
         ['map', 'assets/maps/map.csv'],
         ['pupmap', 'assets/maps/pupmap.csv'],
         ['testmap1', 'assets/maps/testmap1.csv'],
+        ['pmap48', 'assets/maps/pmap48.csv'],
+        ['pmap32', 'assets/maps/pmap32.csv'],
         ['pmap', 'assets/maps/pmap.csv']
+
 
     ],
 
@@ -74,7 +83,9 @@ Game.Preloader.resources = {
         ['right', 'assets/img/arrow_right.png', 20, 20],
         ['up', 'assets/img/arrow_up.png', 20, 20],
         ['dog', 'assets/img/dog.png', 64, 64],
-        ['csprites','assets/img/chompersprites.png', 64, 64]
+        ['csprites','assets/img/chompersprites.png', 64, 64],
+        ['csprites48','assets/img/chompersprites48.png', 48, 48],
+        ['csprites32','assets/img/chompersprites32.png', 32, 32]
     ]
 
 };
