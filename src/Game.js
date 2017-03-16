@@ -18,7 +18,7 @@ var music;
 var player_startPosX;
 var player_startPosY;
 var wasd;
-var gridsize = 64;
+var gridsize = 32;
 var directions = [null, null, null, null];
 var opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
 var treats;
@@ -110,11 +110,11 @@ Game.Game.prototype = {
             map.addTilesetImage('land');
             layer = map.createLayer(0);
 
-            player_startPosX = 8;
-            player_startPosY = 13;
+            player_startPosX = 14;
+            player_startPosY = 21;
 
-            enemyStartX = 4;
-            enemyStartY = 5;
+            enemyStartX = 7;
+            enemyStartY = 11;
 
             enemy_data= [
                 make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
@@ -136,12 +136,12 @@ Game.Game.prototype = {
 
         } else if (level == 'pacmap') {
 
-            map = this.add.tilemap('pmap', gridsize, gridsize);
-            map.addTilesetImage('cTile');
+            map = this.add.tilemap('pmap32', gridsize, gridsize);
+            map.addTilesetImage('cTile32');
             layer = map.createLayer(0);
 
-            player_startPosX = 8;
-            player_startPosY = 13;
+            player_startPosX = 18;
+            player_startPosY = 19;
 
             enemyStartX = 4;
             enemyStartY = 7;
@@ -161,8 +161,8 @@ Game.Game.prototype = {
             treats = this.add.physicsGroup();
             sTreats = this.add.physicsGroup();
 
-            map.createFromTiles(treatIndex, safetile, 'dot', layer, treats);
-            map.createFromTiles(sTreatsIndex, safetile, 'bigDot', layer, sTreats);
+            map.createFromTiles(treatIndex, safetile, 'dot32', layer, treats);
+            map.createFromTiles(sTreatsIndex, safetile, 'bigDot32', layer, sTreats);
 
 
         }
@@ -195,7 +195,7 @@ Game.Game.prototype = {
             player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 22, 21, 20, 19], 20, true);
         }else if(level == 'pacmap'){
 
-            player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites', 38);
+            player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites32', 38);
             player.anchor.setTo(0.5, 0.5);
             player.animations.add('walkLeft', [38, 39], 10, true);
             player.animations.add('walkRight', [10, 11], 10, true);
@@ -216,7 +216,7 @@ Game.Game.prototype = {
             if (level == 'dog') {
                 var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
             }else if(level == 'pacmap'){
-                var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites', 0);
+                var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
                 enemy.animations.add('moving', [0, 1], 10, true);
                 enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
                 enemy.play('moving');
@@ -269,6 +269,34 @@ Game.Game.prototype = {
         this.move(player, player_data);
 
         game.input.onDown.add(this.beginSwipe, this);
+
+    },
+    tap : function(){
+        this.game.input.onDown.remove(this.tap);
+
+        var tapPosX = this.game.input.worldX;
+        var tapPosY = this.game.input.worldY;
+
+
+
+
+        if(Math.abs(tapPosX)>Math.abs(tapPosY)*2 && Math.abs(tapPosX) > 10){
+            if(tapPosX> 0 && player_data.current !== Phaser.LEFT){
+                this.checkDirection(player, player_data, Phaser.LEFT);
+            }else if(tapPosX < 0 && player_data.current !== Phaser.RIGHT){
+                this.checkDirection(player, player_data, Phaser.RIGHT);
+            }
+        }
+        if(Math.abs(tapPosY)>Math.abs(tapPosX)*2 && Math.abs(tapPosY)>10){
+            if(tapPosY>0 && player_data.current !== Phaser.UP){
+                this.checkDirection(player, player_data, Phaser.UP);
+            }else if (tapPosY < 0 && player_data.current !== Phaser.DOWN){
+                this.checkDirection(player, player_data, Phaser.DOWN);
+            }
+        }
+
+        this.game.input.onDown.add(this.tap, this);
+
 
     },
 
