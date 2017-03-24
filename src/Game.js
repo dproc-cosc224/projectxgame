@@ -57,6 +57,8 @@ var buttonRightDown;
 var buttonUpDown;
 var buttonDownDown;
 
+var moveDirection;
+
 // game entity object used for players and enemies
 function GameEntity(startX, startY, speed, threshold, current, turning, marker, turnPoint) {
     this.startX = startX;
@@ -72,7 +74,7 @@ function GameEntity(startX, startY, speed, threshold, current, turning, marker, 
 //creates the player data
 function make_player_data() {
 
-    var p_data = new GameEntity(player_startPosX, player_startPosY, 100, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
+    var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     p_data.powered_up = 0;
     return p_data;
 }
@@ -152,9 +154,10 @@ Game.Game.prototype = {
             enemyStartY = 7;
 
             enemy_data= [
-                make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
-                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+                // make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
+                // make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
             ];
+
             player_data = make_player_data();
             NUM_ENEMIES = enemy_data.length;
             enemy_sprites = new Array(NUM_ENEMIES);
@@ -323,12 +326,6 @@ Game.Game.prototype = {
 
 
     },*/
-    actionOnClick : function (button) {
-        if (button === upButton && player_data.current !== Phaser.UP) this.checkDirection(player, player_data, Phaser.UP);
-        if (button === downButton && player_data.current !== Phaser.DOWN) this.checkDirection(player, player_data, Phaser.DOWN);
-        if (button === leftButton && player_data.current !== Phaser.LEFT) this.checkDirection(player, player_data, Phaser.LEFT);
-        if (button === rightButton  && player_data.current !== Phaser.RIGHT) this.checkDirection(player, player_data, Phaser.RIGHT);
-    },
 
     updateCounter : function(){
         time--;
@@ -354,16 +351,16 @@ Game.Game.prototype = {
 
         if(Math.abs(distX)>Math.abs(distY)*2 && Math.abs(distX) > 10){
             if(distX> 0 && player_data.current !== Phaser.LEFT){
-                this.checkDirection(player, player_data, Phaser.LEFT);
+                moveDirection = "left"; //this.checkDirection(player, player_data, Phaser.LEFT);
             }else if(distX < 0 && player_data.current !== Phaser.RIGHT){
-                this.checkDirection(player, player_data, Phaser.RIGHT);
+                moveDirection = "right"; //this.checkDirection(player, player_data, Phaser.RIGHT);
             }
         }
         if(Math.abs(distY)>Math.abs(distX)*2 && Math.abs(distY)>10){
             if(distY>0 && player_data.current !== Phaser.UP){
-                this.checkDirection(player, player_data, Phaser.UP);
+                moveDirection = "up"; //this.checkDirection(player, player_data, Phaser.UP);
             }else if (distY < 0 && player_data.current !== Phaser.DOWN){
-                this.checkDirection(player, player_data, Phaser.DOWN);
+                moveDirection = "down"; //this.checkDirection(player, player_data, Phaser.DOWN);
             }
         }
         this.game.input.onDown.add(this.beginSwipe, this);
@@ -374,19 +371,19 @@ Game.Game.prototype = {
     checkKeys: function () {
 
         //if the left key is pressed and the player not currently facing left
-        if((cursors.left.isDown  || wasd.left.isDown || buttonLeftDown )  && player_data.current !== Phaser.LEFT){
+        if((cursors.left.isDown  || wasd.left.isDown || buttonLeftDown || moveDirection === "left" )  && player_data.current !== Phaser.LEFT){
 
             this.checkDirection(player, player_data, Phaser.LEFT);
 
-        }else if((cursors.right.isDown || wasd.right.isDown || buttonRightDown)  && player_data.current !== Phaser.RIGHT){
+        }else if((cursors.right.isDown || wasd.right.isDown || buttonRightDown || moveDirection === "right")  && player_data.current !== Phaser.RIGHT){
 
             this.checkDirection(player, player_data, Phaser.RIGHT );
 
-        }else if((cursors.up.isDown || wasd.up.isDown  || buttonUpDown)  && player_data.current !== Phaser.UP){
+        }else if((cursors.up.isDown || wasd.up.isDown  || buttonUpDown || moveDirection === "up")  && player_data.current !== Phaser.UP){
 
             this.checkDirection(player, player_data, Phaser.UP);
 
-        }else if((cursors.down.isDown  || wasd.down.isDown || buttonDownDown)  && player_data.current !== Phaser.DOWN){
+        }else if((cursors.down.isDown  || wasd.down.isDown || buttonDownDown || moveDirection === "down")  && player_data.current !== Phaser.DOWN){
 
             this.checkDirection(player, player_data, Phaser.DOWN);
         }
@@ -430,6 +427,7 @@ Game.Game.prototype = {
             // rotate the sprite
             //this.add.tween(sprite).to( {angle: this.getAngle(sprite, obj, obj.turning) }, obj.turnSpeed, "Linear", true);
         }
+        moveDirection = null;
 
         obj.current = obj.turning;
 
