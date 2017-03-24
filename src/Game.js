@@ -10,6 +10,13 @@ Game.Game = function(game) { };
 var HEIGHT = 30;
 var WIDTH = 20;
 
+var ghostDenX = 10;
+var ghostDenY = 9;
+
+var GHOST_SPEED = 140;
+var GHOST_RUNNING_AWAY_SPEED = 80;
+var GHOST_TURN_THRESHOLD = 7;
+
 var map;
 var layer;
 var tiles;
@@ -50,7 +57,6 @@ var enemyStartY;
 var enemy_data;
 var NUM_ENEMIES;
 var enemy_sprites;
-var huntMode;
 
 var buttonLeftDown;
 var buttonRightDown;
@@ -81,9 +87,10 @@ function make_player_data() {
 
 // creates a enemy data object, with a given starting position and movement function
 function make_enemy_data(startX, startY, movement_function) {
-    var enemy = new GameEntity(startX, startY, 140, 7, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
+    var enemy = new GameEntity(startX, startY, GHOST_SPEED, GHOST_TURN_THRESHOLD, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     enemy.move = movement_function;
     enemy.turnSpeed = 150;
+    enemy.running = false;
     return enemy;
 }
 
@@ -111,7 +118,7 @@ Game.Game.prototype = {
 
 
 
-        if (level == 'dog') {
+        if (level === 'dog') {
 
             map = this.add.tilemap('testmap1', gridsize, gridsize);
             map.addTilesetImage('land');
@@ -141,7 +148,7 @@ Game.Game.prototype = {
             map.createFromTiles(treatIndex, safetile, 'bone', layer, treats);
             map.createFromTiles(sTreatsIndex, safetile, 'bigBone', layer, sTreats);
 
-        } else if (level == 'pacmap') {
+        } else if (level === 'pacmap') {
 
             map = this.add.tilemap('pmap32', gridsize, gridsize);
             map.addTilesetImage('cTile32');
@@ -154,6 +161,7 @@ Game.Game.prototype = {
             enemyStartY = 7;
 
             enemy_data= [
+
                 // make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
                 // make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
                 //
@@ -194,7 +202,7 @@ Game.Game.prototype = {
         timeText.visible = true;
 
         //create the player
-        if (level == 'dog') {
+        if (level === 'dog') {
 
             player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'dog', 0);
             player.anchor.setTo(0.5, 0.5);
@@ -202,7 +210,7 @@ Game.Game.prototype = {
             player.animations.add('walkRight', [6, 7, 8, 9, 10, 11, 10, 9, 8, 7], 20, true);
             player.animations.add('walkUp', [12, 13, 14, 15, 16, 17, 16, 15, 14, 13], 20, true);
             player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 22, 21, 20, 19], 20, true);
-        }else if(level == 'pacmap'){
+        }else if(level === 'pacmap'){
 
             player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites32', 38);
             player.anchor.setTo(0.5, 0.5);
@@ -222,10 +230,11 @@ Game.Game.prototype = {
 
         // create enemies
         for(var i = 0; i < NUM_ENEMIES; i++) {
-            if (level == 'dog') {
-                var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
-            }else if(level == 'pacmap'){
-                var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
+            var enemy;
+            if (level === 'dog') {
+                enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
+            }else if(level === 'pacmap'){
+                enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
                 enemy.animations.add('moving', [0, 1], 10, true);
                 enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
                 enemy.play('moving');
@@ -246,7 +255,6 @@ Game.Game.prototype = {
         gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , { fontSize: '32px', fill: '#ffffff'});
         gameOverText.visible = false;
 
-        huntMode = false;
 
         upButton = this.add.button((9.2 * gridsize), (24 * gridsize), 'up',  null, this, 0,1,0,1);
         upButton.scale.setTo(0.4,0.4);
@@ -287,7 +295,6 @@ Game.Game.prototype = {
 
         //add the WASD keys to the possible input
         wasd = {
-
             up : game.input.keyboard.addKey(Phaser.Keyboard.W),
             down: game.input.keyboard.addKey(Phaser.Keyboard.S),
             right: game.input.keyboard.addKey(Phaser.Keyboard.D),
@@ -295,7 +302,6 @@ Game.Game.prototype = {
         };
 
         this.move(player, player_data);
-
         game.input.onDown.add(this.beginSwipe, this);
 
     },
@@ -411,7 +417,7 @@ Game.Game.prototype = {
         sprite.scale.x = 1;
         sprite.angle = 0;
 
-        if(obj == player_data) {
+        if(obj === player_data) {
             if(obj.turning === Phaser.RIGHT){
                 player.play('walkRight');
             }
@@ -456,7 +462,7 @@ Game.Game.prototype = {
     //     return targetAngle;
     // },
 
-    checkDirection : function(sprite, obj, turningTo) {
+    checkDirection: function(sprite, obj, turningTo) {
         //3 conditions to check:
         //The player is set to turn in that direction
         //There isn't a tile in that direction
@@ -487,13 +493,14 @@ Game.Game.prototype = {
     turn: function(sprite, obj){
 
         //take in the floor of the players position
-        var plX = Math.floor(sprite.x);
-        var plY = Math.floor(sprite.y);
+        var sprite_x = Math.floor(sprite.x);
+        var sprite_y = Math.floor(sprite.y);
+
 
         //if the player's cooridinates and the turning point
         //not within the alloted threshold, return false
-        if(!this.math.fuzzyEqual(plX, obj.turnPoint.x, obj.threshold) ||
-            !this.math.fuzzyEqual(plY, obj.turnPoint.y, obj.threshold)){
+        if(!this.math.fuzzyEqual(sprite_x, obj.turnPoint.x, obj.threshold) ||
+            !this.math.fuzzyEqual(sprite_y, obj.turnPoint.y, obj.threshold)){
 
             return false;
         }
@@ -537,26 +544,35 @@ Game.Game.prototype = {
             // TODO
             // make a sound or change appearance when power_up ends
             player_data.powered_up--;
+            if(player_data.powered_up === 0){
+                for(var i = 0; i < NUM_ENEMIES; i++){
+                    enemy_sprites[i].play('moving');
+                    enemy_data[i].running = false;
+                    enemy_data.speed = GHOST_SPEED;
+                }
+            }
         });
-
 
         //update the score
         score += 50;
         scoreText.text = 'Score: ' + score;
 
-        //turn on huntMode
-        huntMode = true;
-        if(level == 'pacmap'){
+        if(level === 'pacmap'){
             for(var i =0; i < NUM_ENEMIES; i++) {
                 enemy_sprites[i].play('runAway');
             }
+        }
+        for(var j = 0; j < NUM_ENEMIES; j++){
+            enemy_data[j].running = true;
+            enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
         }
 
 
     },
 
     enemyCollision: function (player, enemy){
-        if(huntMode){
+        var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
+        if(enemy_obj.running){
             enemy.kill();
 
             //update the score
@@ -601,8 +617,6 @@ Game.Game.prototype = {
         this.physics.arcade.overlap(player, treats, this.eatTreats, null, this);
         this.physics.arcade.overlap(player, sTreats, this.eatSTreats, null, this);
 
-
-
         //find out where player is with grid coordinates
         player_data.marker.x = this.math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
         player_data.marker.y = this.math.snapToFloor(Math.floor(player.y), gridsize) / gridsize;
@@ -626,15 +640,15 @@ Game.Game.prototype = {
             this.turn(player, player_data);
         }
         //win condition
-        if(treats.total === 0  && sTreats.total == 0){
+        if(treats.total === 0  && sTreats.total === 0){
             // treats.callAll('revive');
             // sTreats.callAll('revive');
             //this.gameOver();
         }
 
-        for(var i = 0; i < NUM_ENEMIES; i++) {
-            var enemy = enemy_data[i];
-            var enemy_sprite = enemy_sprites[i];
+        for(var j = 0; j < NUM_ENEMIES; j++) {
+            var enemy = enemy_data[j];
+            var enemy_sprite = enemy_sprites[j];
 
             enemy.marker.x = game.math.snapToFloor(Math.floor(enemy_sprite.x), gridsize) / gridsize;
             enemy.marker.y = game.math.snapToFloor(Math.floor(enemy_sprite.y), gridsize) / gridsize;
@@ -649,22 +663,28 @@ Game.Game.prototype = {
 
             enemy.move(this, enemy_sprite, enemy);
         }
-
-
-
     }
-
 };
 
 function enemy_movement_function_1(game, sprite, obj) {
 
     var enemy_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
-
-
     var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
 
-    var player_x = Phaser.Math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
-    var player_y = Phaser.Math.snapToFloor(Math.floor(player.y), gridsize) / gridsize;
+    if(Math.abs(enemy_x-ghostDenX) <= 1 && Math.abs(enemy_y-ghostDenY) <= 1){
+        obj.running = false;
+        obj.speed = GHOST_SPEED;
+        sprite.play('moving');
+    }
+
+    var running = obj.running;
+
+    var startX = Phaser.Math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
+    var startY = Phaser.Math.snapToFloor(Math.floor(player.y), gridsize) / gridsize;
+    if(running){
+        startX = ghostDenX;
+        startY = ghostDenY;
+    }
 
     var index = layer.index;
 
@@ -673,16 +693,17 @@ function enemy_movement_function_1(game, sprite, obj) {
         seen[i] = new Array(HEIGHT).fill(false);
     }
 
-    var running = player_data.powered_up > 0;
+
+    var target = Phaser.NONE;
+    var directions = [];
 
     var queue = [];
-    queue.push([player_x, player_y]);
-
-    while(queue != null && queue.length != 0) {
+    queue.push([startX, startY]);
+    while(queue !== null && queue.length !== 0) {
 
         // Stack vs Queue, pop will give you a DFS, shift will give you a BFS.
         var current;
-        if(running || obj == enemy_data[0] ){
+        if(running || obj === enemy_data[0] ){
             //bfs
             current = queue.shift();
         }else{
@@ -691,10 +712,8 @@ function enemy_movement_function_1(game, sprite, obj) {
         }
         var current_x = current[0];
         var current_y = current[1];
-        var target = Phaser.NONE;
 
         seen[current_x][current_y] = true;
-
         directions[Phaser.LEFT] = map.getTileLeft(index, current_x, current_y);
         directions[Phaser.RIGHT] = map.getTileRight(index, current_x, current_y);
         directions[Phaser.UP] = map.getTileAbove(index, current_x, current_y);
@@ -703,92 +722,30 @@ function enemy_movement_function_1(game, sprite, obj) {
         // TODO
         // make sure we don't collide with other ghosts
 
-        if(directions[Phaser.LEFT] != null && directions[Phaser.LEFT].index == safetile){
-            if(current_x - 1 == enemy_x && current_y == enemy_y){
-                target = Phaser.RIGHT;
-                if (running){
-                    target = Phaser.LEFT;
+        var dirs = [Phaser.LEFT, Phaser.RIGHT, Phaser.UP, Phaser.DOWN];
+        var vectors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        var opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
 
-                }
-                if(!running || (running && map.getTileLeft(index, enemy_x, enemy_y).index == safetile)){
-                    if(obj.current != target) {
+        // Path-finding magic. Marty is sorry. Marty will fix this
+        for(var j = 0; j < 4; j++){
+            target = dirs[j];
+            var x = current_x + vectors[j][0];
+            var y = current_y + vectors[j][1];
+            if(directions[target] !== null && directions[target].index === safetile){
+                if(x === enemy_x && y === enemy_y){
+                    target = opposites[target];
+                    if(obj.current !== target){
                         game.checkDirection(sprite, obj, target);
-                        if(obj.turning != Phaser.NONE){
+                        if(obj.turning !== Phaser.NONE){
                             game.turn(sprite, obj);
                         }
                     }
-                    break;
+                    return;
                 }
-
-            }
-            if(! seen[current_x-1][current_y]){
-                seen[current_x-1][current_y] = true;
-                queue.push([current_x - 1, current_y]);
-            }
-        }
-
-        if(directions[Phaser.RIGHT] != null && directions[Phaser.RIGHT].index == safetile){
-            if(current_x + 1 == enemy_x && current_y == enemy_y){
-                target = Phaser.LEFT;
-                if(running) {
-                    target = Phaser.RIGHT;
+                if(!seen[x][y]){
+                    seen[x][y] = true;
+                    queue.push([x, y]);
                 }
-                if(!running || (running && map.getTileRight(index, enemy_x, enemy_y).index == safetile)){
-                    if(obj.current != target) {
-                        game.checkDirection(sprite, obj, target);
-                        if(obj.turning != Phaser.NONE){
-                            game.turn(sprite, obj);
-                        }
-                    }
-                    break;
-                }
-            }
-            if(! seen[current_x+1][current_y]){
-                seen[current_x+1][current_y] = true;
-                queue.push([current_x+1, current_y]);
-            }
-        }
-
-        if(directions[Phaser.UP] != null && directions[Phaser.UP].index == safetile) {
-            if(current_x == enemy_x && current_y - 1 == enemy_y){
-                target = Phaser.DOWN;
-                if(running) {
-                    target = Phaser.UP;
-                }
-                if(!running || (running && map.getTileAbove(index, enemy_x, enemy_y).index == safetile)){
-                    if(obj.current != target){
-                        game.checkDirection(sprite, obj, target);
-                        if(obj.turning != Phaser.NONE) {
-                            game.turn(sprite, obj);
-                        }
-                    }
-                    break;
-                }
-            }
-            if(! seen[current_x][current_y - 1]){
-                seen[current_x][current_y - 1] = true;
-                queue.push([current_x, current_y - 1]);
-            }
-        }
-        if(directions[Phaser.DOWN] != null && directions[Phaser.DOWN].index == safetile) {
-            if(current_x == enemy_x && current_y + 1 == enemy_y){
-                target = Phaser.UP;
-                if(running) {
-                    target = Phaser.DOWN;
-                }
-                if(!running || (running && map.getTileBelow(index, enemy_x, enemy_y).index == safetile)){
-                    if(obj.current != target) {
-                        game.checkDirection(sprite, obj, target);
-                        if(obj.turning != Phaser.NONE){
-                            game.turn(sprite, obj);
-                        }
-                    }
-                    break;
-                }
-            }
-            if(! seen[current_x][current_y + 1]){
-                seen[current_x][current_y + 1] = true;
-                queue.push([current_x, current_y + 1]);
             }
         }
     }
