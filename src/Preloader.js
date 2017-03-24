@@ -57,7 +57,12 @@ Game.Preloader.resources = {
         ['bigBone', 'assets/img/bigBone.png'],
         ['cTile', 'assets/img/chompermazetiles.png'],
         ['cTile48', 'assets/img/chompermazetiles48.png'],
-        ['cTile32', 'assets/img/chompermazetiles32.png']
+        ['cTile32', 'assets/img/chompermazetiles32.png'],
+        ['down', 'assets/img/down.png'],
+        ['left', 'assets/img/left.png'],
+        ['right', 'assets/img/right.png'],
+        ['up', 'assets/img/up.png'],
+        ['circle', 'assets/img/circle.png']
 
     ],
 
@@ -78,10 +83,6 @@ Game.Preloader.resources = {
 
     'spritesheet': [
         ['pup', 'assets/img/pup.png', 32, 32],
-        ['down', 'assets/img/arrow_down.png', 20, 20],
-        ['left', 'assets/img/arrow_left.png', 20, 20],
-        ['right', 'assets/img/arrow_right.png', 20, 20],
-        ['up', 'assets/img/arrow_up.png', 20, 20],
         ['dog', 'assets/img/dog.png', 64, 64],
         ['csprites','assets/img/chompersprites.png', 64, 64],
         ['csprites48','assets/img/chompersprites48.png', 48, 48],
