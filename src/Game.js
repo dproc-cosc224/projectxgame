@@ -13,6 +13,9 @@ var WIDTH = 20;
 var ghostDenX = 10;
 var ghostDenY = 9;
 
+var GHOST_SPEED = 140;
+var GHOST_TURN_THRESHOLD = 7;
+
 var map;
 var layer;
 var tiles;
@@ -76,7 +79,7 @@ function make_player_data() {
 
 // creates a enemy data object, with a given starting position and movement function
 function make_enemy_data(startX, startY, movement_function) {
-    var enemy = new GameEntity(startX, startY, 140, 7, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
+    var enemy = new GameEntity(startX, startY, GHOST_SPEED, GHOST_TURN_THRESHOLD, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     enemy.move = movement_function;
     enemy.turnSpeed = 150;
     enemy.running = false;
@@ -514,6 +517,7 @@ Game.Game.prototype = {
                 for(var i = 0; i < NUM_ENEMIES; i++){
                     enemy_sprites[i].play('moving')
                     enemy_data[i].running = false;
+                    enemy_data.speed = GHOST_SPEED;
                 }
             }
         });
@@ -529,6 +533,7 @@ Game.Game.prototype = {
         }
         for(var j = 0; j < NUM_ENEMIES; j++){
             enemy_data[j].running = true;
+            enemy_data[j].speed = GHOST_SPEED/2;
         }
 
 
@@ -637,6 +642,7 @@ function enemy_movement_function_1(game, sprite, obj) {
 
     if(Math.abs(enemy_x-ghostDenX) <= 1 && Math.abs(enemy_y-ghostDenY) <= 1){
         obj.running = false;
+        obj.speed = GHOST_SPEED;
         sprite.play('moving');
     }
 
