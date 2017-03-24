@@ -260,32 +260,32 @@ Game.Game.prototype = {
         upButton.scale.setTo(0.4,0.4);
         upButton.events.onInputOver.add(function(){ buttonUpDown = true; });
         upButton.events.onInputOut.add(function(){ buttonUpDown = false;});
-        upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
-        upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
+        //upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
+        //upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
         //upButton.animations.add('press', [0,1,2,1],20, false);
 
         downButton = this.add.button((9.2 * gridsize), (26.75 * gridsize), 'down',  null, this, 0,1,0,1);
         downButton.scale.setTo(0.4,0.4);
         downButton.events.onInputOver.add(function(){ buttonDownDown = true; });
         downButton.events.onInputOut.add(function(){ buttonDownDown = false;});
-        downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
-        downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
+        //downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
+        //downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
         //downButton.animations.add('press', [0,1,2,1],20, false);
 
         rightButton = this.add.button((10.45 * gridsize), (25.65 * gridsize), 'right',  null, this, 0,1,0,1);
         rightButton.scale.setTo(.4,.4);
         rightButton.events.onInputOver.add(function(){ buttonRightDown = true; });
         rightButton.events.onInputOut.add(function(){ buttonRightDown = false;});
-        rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
-        rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
+        //rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
+        //rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
         //rightButton.animations.add('press', [0,1,2,1],20, false);
 
         leftButton = this.add.button((7.45 * gridsize), (25.65 * gridsize), 'left',  null, this, 0,1,0,1);
         leftButton.scale.setTo(.4,.4);
         leftButton.events.onInputOver.add(function(){ buttonLeftDown = true; });
         leftButton.events.onInputOut.add(function(){ buttonLeftDown = false;});
-        leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
-        leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
+        //leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
+        //leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
         //leftButton.animations.add('press', [0,1,2,1],20, false);
 
         var circle = this.add.sprite(( 9.45 * gridsize), (25.85 * gridsize), 'circle', 0);
