@@ -14,6 +14,7 @@ var ghostDenX = 10;
 var ghostDenY = 9;
 
 var GHOST_SPEED = 140;
+var GHOST_RUNNING_AWAY_SPEED = 80;
 var GHOST_TURN_THRESHOLD = 7;
 
 var map;
@@ -515,7 +516,7 @@ Game.Game.prototype = {
             player_data.powered_up--;
             if(player_data.powered_up === 0){
                 for(var i = 0; i < NUM_ENEMIES; i++){
-                    enemy_sprites[i].play('moving')
+                    enemy_sprites[i].play('moving');
                     enemy_data[i].running = false;
                     enemy_data.speed = GHOST_SPEED;
                 }
@@ -533,7 +534,7 @@ Game.Game.prototype = {
         }
         for(var j = 0; j < NUM_ENEMIES; j++){
             enemy_data[j].running = true;
-            enemy_data[j].speed = GHOST_SPEED/2;
+            enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
         }
 
 
