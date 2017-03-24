@@ -302,7 +302,7 @@ Game.Game.prototype = {
         };
 
         this.move(player, player_data);
-        game.input.onDown.add(this.beginSwipe, this);
+        //game.input.onDown.add(this.beginSwipe, this);
 
     },
 /*    tap : function(){
@@ -342,7 +342,7 @@ Game.Game.prototype = {
         }
     },
 
-    beginSwipe : function(){
+/*    beginSwipe : function(){
       player_startPosX = this.game.input.worldX;
       player_startPosY = this.game.input.worldY;
       this.game.input.onDown.remove(this.beginSwipe);
@@ -372,7 +372,7 @@ Game.Game.prototype = {
         }
         this.game.input.onDown.add(this.beginSwipe, this);
         this.game.input.onUp.remove(this.endSwipe);
-    },
+    },*/
 
 
     checkKeys: function () {
