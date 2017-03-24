@@ -34,10 +34,10 @@ var treatIndex;
 var sTreatsIndex;
 var safetile;
 
-// var upButton;
-// var downButton;
-// var leftButton;
-// var rightButton;
+var upButton;
+var downButton;
+var leftButton;
+var rightButton;
 
 var endX;
 var endY;
@@ -57,6 +57,13 @@ var enemyStartY;
 var enemy_data;
 var NUM_ENEMIES;
 var enemy_sprites;
+
+var buttonLeftDown;
+var buttonRightDown;
+var buttonUpDown;
+var buttonDownDown;
+
+var moveDirection;
 
 // game entity object used for players and enemies
 function GameEntity(startX, startY, speed, threshold, current, turning, marker, turnPoint) {
@@ -154,9 +161,12 @@ Game.Game.prototype = {
             enemyStartY = 7;
 
             enemy_data= [
-                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
-                make_enemy_data((enemyStartX+2) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+
+                make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
+                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
+
             ];
+
             player_data = make_player_data();
             NUM_ENEMIES = enemy_data.length;
             enemy_sprites = new Array(NUM_ENEMIES);
@@ -187,7 +197,7 @@ Game.Game.prototype = {
         timer = this.time.create(false);
         timer.loop(1000, this.updateCounter, this);
         timer.start();
-        time = 20;
+        time = 1000;
         timeText = this.add.text(400, 32, 'Time Left : ' + time, {fontSize: '32px', fill: '#ffffff'});
         timeText.visible = true;
 
@@ -246,21 +256,40 @@ Game.Game.prototype = {
         gameOverText.visible = false;
 
 
-        // upButton = this.add.button((9.5 * gridsize), (23 * gridsize), 'up', this.actionOnClick, this);
-        // upButton.scale.setTo(2.5,2.5);
-        // upButton.animations.add('press', [0,1,2,1],20, false);
-        //
-        // downButton = this.add.sprite((9.5 * gridsize), (25 * gridsize), 'down', 0);
-        // downButton.scale.setTo(2.5,2.5);
-        // downButton.animations.add('press', [0,1,2,1],20, false);
-        //
-        // rightButton = this.add.sprite((11 * gridsize), (24 * gridsize), 'right', 0);
-        // rightButton.scale.setTo(2,2);
-        // rightButton.animations.add('press', [0,1,2,1],20, false);
-        //
-        // leftButton = this.add.sprite((8.25 * gridsize), (24 * gridsize), 'left', 0);
-        // leftButton.scale.setTo(2,2);
-        // leftButton.animations.add('press', [0,1,2,1],20, false);
+        upButton = this.add.button((9.2 * gridsize), (24 * gridsize), 'up',  null, this, 0,1,0,1);
+        upButton.scale.setTo(0.4,0.4);
+        upButton.events.onInputOver.add(function(){ buttonUpDown = true; });
+        upButton.events.onInputOut.add(function(){ buttonUpDown = false;});
+        upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
+        upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
+        //upButton.animations.add('press', [0,1,2,1],20, false);
+
+        downButton = this.add.button((9.2 * gridsize), (26.75 * gridsize), 'down',  null, this, 0,1,0,1);
+        downButton.scale.setTo(0.4,0.4);
+        downButton.events.onInputOver.add(function(){ buttonDownDown = true; });
+        downButton.events.onInputOut.add(function(){ buttonDownDown = false;});
+        downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
+        downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
+        //downButton.animations.add('press', [0,1,2,1],20, false);
+
+        rightButton = this.add.button((10.45 * gridsize), (25.65 * gridsize), 'right',  null, this, 0,1,0,1);
+        rightButton.scale.setTo(.4,.4);
+        rightButton.events.onInputOver.add(function(){ buttonRightDown = true; });
+        rightButton.events.onInputOut.add(function(){ buttonRightDown = false;});
+        rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
+        rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
+        //rightButton.animations.add('press', [0,1,2,1],20, false);
+
+        leftButton = this.add.button((7.45 * gridsize), (25.65 * gridsize), 'left',  null, this, 0,1,0,1);
+        leftButton.scale.setTo(.4,.4);
+        leftButton.events.onInputOver.add(function(){ buttonLeftDown = true; });
+        leftButton.events.onInputOut.add(function(){ buttonLeftDown = false;});
+        leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
+        leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
+        //leftButton.animations.add('press', [0,1,2,1],20, false);
+
+        var circle = this.add.sprite(( 9.45 * gridsize), (25.85 * gridsize), 'circle', 0);
+        circle.scale.setTo(.3,.3);
 
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -276,7 +305,7 @@ Game.Game.prototype = {
         game.input.onDown.add(this.beginSwipe, this);
 
     },
-    tap : function(){
+/*    tap : function(){
         this.game.input.onDown.remove(this.tap);
 
         var tapPosX = this.game.input.worldX;
@@ -303,7 +332,7 @@ Game.Game.prototype = {
         this.game.input.onDown.add(this.tap, this);
 
 
-    },
+    },*/
 
     updateCounter : function(){
         time--;
@@ -329,16 +358,16 @@ Game.Game.prototype = {
 
         if(Math.abs(distX)>Math.abs(distY)*2 && Math.abs(distX) > 10){
             if(distX> 0 && player_data.current !== Phaser.LEFT){
-                this.checkDirection(player, player_data, Phaser.LEFT);
+                moveDirection = "left"; //this.checkDirection(player, player_data, Phaser.LEFT);
             }else if(distX < 0 && player_data.current !== Phaser.RIGHT){
-                this.checkDirection(player, player_data, Phaser.RIGHT);
+                moveDirection = "right"; //this.checkDirection(player, player_data, Phaser.RIGHT);
             }
         }
         if(Math.abs(distY)>Math.abs(distX)*2 && Math.abs(distY)>10){
             if(distY>0 && player_data.current !== Phaser.UP){
-                this.checkDirection(player, player_data, Phaser.UP);
+                moveDirection = "up"; //this.checkDirection(player, player_data, Phaser.UP);
             }else if (distY < 0 && player_data.current !== Phaser.DOWN){
-                this.checkDirection(player, player_data, Phaser.DOWN);
+                moveDirection = "down"; //this.checkDirection(player, player_data, Phaser.DOWN);
             }
         }
         this.game.input.onDown.add(this.beginSwipe, this);
@@ -349,19 +378,19 @@ Game.Game.prototype = {
     checkKeys: function () {
 
         //if the left key is pressed and the player not currently facing left
-        if((cursors.left.isDown  || wasd.left.isDown )  && player_data.current !== Phaser.LEFT){
+        if((cursors.left.isDown  || wasd.left.isDown || buttonLeftDown || moveDirection === "left" )  && player_data.current !== Phaser.LEFT){
 
             this.checkDirection(player, player_data, Phaser.LEFT);
 
-        }else if((cursors.right.isDown || wasd.right.isDown)  && player_data.current !== Phaser.RIGHT){
+        }else if((cursors.right.isDown || wasd.right.isDown || buttonRightDown || moveDirection === "right")  && player_data.current !== Phaser.RIGHT){
 
             this.checkDirection(player, player_data, Phaser.RIGHT );
 
-        }else if((cursors.up.isDown || wasd.up.isDown)  && player_data.current !== Phaser.UP){
+        }else if((cursors.up.isDown || wasd.up.isDown  || buttonUpDown || moveDirection === "up")  && player_data.current !== Phaser.UP){
 
             this.checkDirection(player, player_data, Phaser.UP);
 
-        }else if((cursors.down.isDown  || wasd.down.isDown )  && player_data.current !== Phaser.DOWN){
+        }else if((cursors.down.isDown  || wasd.down.isDown || buttonDownDown || moveDirection === "down")  && player_data.current !== Phaser.DOWN){
 
             this.checkDirection(player, player_data, Phaser.DOWN);
         }
@@ -405,6 +434,7 @@ Game.Game.prototype = {
             // rotate the sprite
             //this.add.tween(sprite).to( {angle: this.getAngle(sprite, obj, obj.turning) }, obj.turnSpeed, "Linear", true);
         }
+        moveDirection = null;
 
         obj.current = obj.turning;
 
@@ -536,6 +566,8 @@ Game.Game.prototype = {
             enemy_data[j].running = true;
             enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
         }
+
+
     },
 
     enemyCollision: function (player, enemy){
@@ -607,7 +639,6 @@ Game.Game.prototype = {
         if(player_data.turning !== Phaser.NONE){
             this.turn(player, player_data);
         }
-
         //win condition
         if(treats.total === 0  && sTreats.total === 0){
             // treats.callAll('revive');
