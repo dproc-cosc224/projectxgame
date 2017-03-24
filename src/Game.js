@@ -58,6 +58,11 @@ var enemy_data;
 var NUM_ENEMIES;
 var enemy_sprites;
 
+var buttonLeftDown;
+var buttonRightDown;
+var buttonUpDown;
+var buttonDownDown;
+
 // game entity object used for players and enemies
 function GameEntity(startX, startY, speed, threshold, current, turning, marker, turnPoint) {
     this.startX = startX;
@@ -73,7 +78,7 @@ function GameEntity(startX, startY, speed, threshold, current, turning, marker, 
 //creates the player data
 function make_player_data() {
 
-    var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
+    var p_data = new GameEntity(player_startPosX, player_startPosY, 100, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     p_data.powered_up = 0;
     return p_data;
 }
@@ -187,7 +192,7 @@ Game.Game.prototype = {
         timer = this.time.create(false);
         timer.loop(1000, this.updateCounter, this);
         timer.start();
-        time = 20;
+        time = 1000;
         timeText = this.add.text(400, 32, 'Time Left : ' + time, {fontSize: '32px', fill: '#ffffff'});
         timeText.visible = true;
 
@@ -246,20 +251,36 @@ Game.Game.prototype = {
         gameOverText.visible = false;
 
 
-        upButton = this.add.button((9.2 * gridsize), (24 * gridsize), 'up', this.actionOnClick, this);
+        upButton = this.add.button((9.2 * gridsize), (24 * gridsize), 'up',  null, this, 0,1,0,1);
         upButton.scale.setTo(0.4,0.4);
+        upButton.events.onInputOver.add(function(){ buttonUpDown = true; });
+        upButton.events.onInputOut.add(function(){ buttonUpDown = false;});
+        upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
+        upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
         //upButton.animations.add('press', [0,1,2,1],20, false);
 
-        downButton = this.add.button((9.2 * gridsize), (26.75 * gridsize), 'down', this.actionOnClick, this);
+        downButton = this.add.button((9.2 * gridsize), (26.75 * gridsize), 'down',  null, this, 0,1,0,1);
         downButton.scale.setTo(0.4,0.4);
+        downButton.events.onInputOver.add(function(){ buttonDownDown = true; });
+        downButton.events.onInputOut.add(function(){ buttonDownDown = false;});
+        downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
+        downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
         //downButton.animations.add('press', [0,1,2,1],20, false);
 
-        rightButton = this.add.button((10.45 * gridsize), (25.65 * gridsize), 'right', this.actionOnClick, this);
+        rightButton = this.add.button((10.45 * gridsize), (25.65 * gridsize), 'right',  null, this, 0,1,0,1);
         rightButton.scale.setTo(.4,.4);
+        rightButton.events.onInputOver.add(function(){ buttonRightDown = true; });
+        rightButton.events.onInputOut.add(function(){ buttonRightDown = false;});
+        rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
+        rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
         //rightButton.animations.add('press', [0,1,2,1],20, false);
 
-        leftButton = this.add.button((7.45 * gridsize), (25.65 * gridsize), 'left', this.actionOnClick, this);
+        leftButton = this.add.button((7.45 * gridsize), (25.65 * gridsize), 'left',  null, this, 0,1,0,1);
         leftButton.scale.setTo(.4,.4);
+        leftButton.events.onInputOver.add(function(){ buttonLeftDown = true; });
+        leftButton.events.onInputOut.add(function(){ buttonLeftDown = false;});
+        leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
+        leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
         //leftButton.animations.add('press', [0,1,2,1],20, false);
 
         var circle = this.add.sprite(( 9.45 * gridsize), (25.85 * gridsize), 'circle', 0);
@@ -308,10 +329,10 @@ Game.Game.prototype = {
 
     },*/
     actionOnClick : function (button) {
-        if (button === upButton) this.checkDirection(player, player_data, Phaser.UP);
-        if (button === downButton) this.checkDirection(player, player_data, Phaser.DOWN);
-        if (button === leftButton) this.checkDirection(player, player_data, Phaser.LEFT);
-        if (button === rightButton) this.checkDirection(player, player_data, Phaser.RIGHT);
+        if (button === upButton && player_data.current !== Phaser.UP) this.checkDirection(player, player_data, Phaser.UP);
+        if (button === downButton && player_data.current !== Phaser.DOWN) this.checkDirection(player, player_data, Phaser.DOWN);
+        if (button === leftButton && player_data.current !== Phaser.LEFT) this.checkDirection(player, player_data, Phaser.LEFT);
+        if (button === rightButton  && player_data.current !== Phaser.RIGHT) this.checkDirection(player, player_data, Phaser.RIGHT);
     },
 
     updateCounter : function(){
@@ -358,19 +379,19 @@ Game.Game.prototype = {
     checkKeys: function () {
 
         //if the left key is pressed and the player not currently facing left
-        if((cursors.left.isDown  || wasd.left.isDown )  && player_data.current !== Phaser.LEFT){
+        if((cursors.left.isDown  || wasd.left.isDown || buttonLeftDown )  && player_data.current !== Phaser.LEFT){
 
             this.checkDirection(player, player_data, Phaser.LEFT);
 
-        }else if((cursors.right.isDown || wasd.right.isDown)  && player_data.current !== Phaser.RIGHT){
+        }else if((cursors.right.isDown || wasd.right.isDown || buttonRightDown)  && player_data.current !== Phaser.RIGHT){
 
             this.checkDirection(player, player_data, Phaser.RIGHT );
 
-        }else if((cursors.up.isDown || wasd.up.isDown)  && player_data.current !== Phaser.UP){
+        }else if((cursors.up.isDown || wasd.up.isDown  || buttonUpDown)  && player_data.current !== Phaser.UP){
 
             this.checkDirection(player, player_data, Phaser.UP);
 
-        }else if((cursors.down.isDown  || wasd.down.isDown )  && player_data.current !== Phaser.DOWN){
+        }else if((cursors.down.isDown  || wasd.down.isDown || buttonDownDown)  && player_data.current !== Phaser.DOWN){
 
             this.checkDirection(player, player_data, Phaser.DOWN);
         }
