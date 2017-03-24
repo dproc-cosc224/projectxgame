@@ -34,10 +34,10 @@ var treatIndex;
 var sTreatsIndex;
 var safetile;
 
-// var upButton;
-// var downButton;
-// var leftButton;
-// var rightButton;
+var upButton;
+var downButton;
+var leftButton;
+var rightButton;
 
 var endX;
 var endY;
@@ -246,21 +246,24 @@ Game.Game.prototype = {
         gameOverText.visible = false;
 
 
-        // upButton = this.add.button((9.5 * gridsize), (23 * gridsize), 'up', this.actionOnClick, this);
-        // upButton.scale.setTo(2.5,2.5);
-        // upButton.animations.add('press', [0,1,2,1],20, false);
-        //
-        // downButton = this.add.sprite((9.5 * gridsize), (25 * gridsize), 'down', 0);
-        // downButton.scale.setTo(2.5,2.5);
-        // downButton.animations.add('press', [0,1,2,1],20, false);
-        //
-        // rightButton = this.add.sprite((11 * gridsize), (24 * gridsize), 'right', 0);
-        // rightButton.scale.setTo(2,2);
-        // rightButton.animations.add('press', [0,1,2,1],20, false);
-        //
-        // leftButton = this.add.sprite((8.25 * gridsize), (24 * gridsize), 'left', 0);
-        // leftButton.scale.setTo(2,2);
-        // leftButton.animations.add('press', [0,1,2,1],20, false);
+        upButton = this.add.button((9.2 * gridsize), (24 * gridsize), 'up', this.actionOnClick, this);
+        upButton.scale.setTo(0.4,0.4);
+        //upButton.animations.add('press', [0,1,2,1],20, false);
+
+        downButton = this.add.button((9.2 * gridsize), (26.75 * gridsize), 'down', this.actionOnClick, this);
+        downButton.scale.setTo(0.4,0.4);
+        //downButton.animations.add('press', [0,1,2,1],20, false);
+
+        rightButton = this.add.button((10.45 * gridsize), (25.65 * gridsize), 'right', this.actionOnClick, this);
+        rightButton.scale.setTo(.4,.4);
+        //rightButton.animations.add('press', [0,1,2,1],20, false);
+
+        leftButton = this.add.button((7.45 * gridsize), (25.65 * gridsize), 'left', this.actionOnClick, this);
+        leftButton.scale.setTo(.4,.4);
+        //leftButton.animations.add('press', [0,1,2,1],20, false);
+
+        var circle = this.add.sprite(( 9.45 * gridsize), (25.85 * gridsize), 'circle', 0);
+        circle.scale.setTo(.3,.3);
 
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -276,7 +279,7 @@ Game.Game.prototype = {
         game.input.onDown.add(this.beginSwipe, this);
 
     },
-    tap : function(){
+/*    tap : function(){
         this.game.input.onDown.remove(this.tap);
 
         var tapPosX = this.game.input.worldX;
@@ -303,6 +306,12 @@ Game.Game.prototype = {
         this.game.input.onDown.add(this.tap, this);
 
 
+    },*/
+    actionOnClick : function (button) {
+        if (button === upButton) this.checkDirection(player, player_data, Phaser.UP);
+        if (button === downButton) this.checkDirection(player, player_data, Phaser.DOWN);
+        if (button === leftButton) this.checkDirection(player, player_data, Phaser.LEFT);
+        if (button === rightButton) this.checkDirection(player, player_data, Phaser.RIGHT);
     },
 
     updateCounter : function(){
