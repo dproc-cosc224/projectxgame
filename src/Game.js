@@ -179,7 +179,12 @@ Game.Game.prototype = {
             sTreats = this.add.physicsGroup();
 
             map.createFromTiles(treatIndex, safetile, 'dot32', layer, treats);
-            map.createFromTiles(sTreatsIndex, safetile, 'bigDot32', layer, sTreats);
+            map.createFromTiles(sTreatsIndex, safetile, 'cSpTile32', layer, sTreats);
+
+            //add blink animations to bigdots
+            sTreats.callAll('animations.add', 'animations', 'blink', [4, 8], 3, true);
+            sTreats.callAll('animations.play', 'animations', 'blink');
+
 
 
         }
