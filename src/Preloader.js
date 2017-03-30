@@ -75,8 +75,9 @@ Game.Preloader.resources = {
         //['pupmap', 'assets/maps/pupmap.csv'],
         //['testmap1', 'assets/maps/testmap1.csv'],
         //['pmap48', 'assets/maps/pmap48.csv'],
-        ['pmap32', 'assets/maps/pmap32.csv'],
-        ['pmap', 'assets/maps/pmap.csv']
+        //['pmap', 'assets/maps/pmap.csv'],
+        ['pmap32', 'assets/maps/pmap32.csv']
+
 
 
     ],
@@ -86,7 +87,9 @@ Game.Preloader.resources = {
         //['dog', 'assets/img/dog.png', 64, 64],
         //['csprites','assets/img/chompersprites.png', 64, 64],
         //['csprites48','assets/img/chompersprites48.png', 48, 48],
-        ['csprites32','assets/img/chompersprites32.png', 32, 32]
+        ['csprites32','assets/img/chompersprites32.png', 32, 32],
+        ['cSpTile32', 'assets/img/chompermazetiles32.png', 32, 32]
+
     ]
 
 };
