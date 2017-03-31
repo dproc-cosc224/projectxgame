@@ -10,11 +10,12 @@ Game.Game = function(game) { };
 var HEIGHT = 30;
 var WIDTH = 20;
 
-var ghostDenX = 10;
-var ghostDenY = 9;
+var ghostDenX = 9;
+var ghostDenY = 11;
 
 var GHOST_SPEED = 140;
 var GHOST_RUNNING_AWAY_SPEED = 80;
+var DEAD_GHOST_SPEED = 200;
 var GHOST_TURN_THRESHOLD = 7;
 
 var map;
@@ -47,6 +48,8 @@ var timer;
 var time;
 var timeText;
 var gameOverText;
+
+var killText;
 
 var player;
 var player_data;
@@ -92,6 +95,7 @@ function make_enemy_data(startX, startY, movement_function) {
     enemy.move = movement_function;
     enemy.turnSpeed = 150;
     enemy.running = false;
+    enemy.alive = true;
     return enemy;
 }
 
@@ -205,7 +209,7 @@ Game.Game.prototype = {
         timer.loop(1000, this.updateCounter, this);
         timer.start();
         time = 1000;
-        timeText = this.add.text(400, 32, 'Time Left : ' + time, {fontSize: '32px', fill: '#ffffff'});
+        timeText = this.add.text(400, 32, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         timeText.visible = true;
 
         //create the player
@@ -244,6 +248,8 @@ Game.Game.prototype = {
                 enemy.animations.add('walkUp', [42, 43], 10, true);
                 enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
                 enemy.animations.add('run', [12], 1, true);
+                enemy.animations.add('score', [54], 1, true);
+                enemy.animations.add('dead', [40], 1, true);
                 enemy.play('walkRight');
             }
             enemy.anchor.setTo(0.5, 0.5);
@@ -255,11 +261,11 @@ Game.Game.prototype = {
 
         //set the score to zero
         score = 0;
-        scoreText = this.add.text(32 ,32, 'score : 0', { fontSize: '32px', fill: '#ffffff'});
+        scoreText = this.add.text(32 ,32, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         scoreText.visible = true;
 
         //set the gameOverText and set it to not visible
-        gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , { fontSize: '32px', fill: '#ffffff'});
+        gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         gameOverText.visible = false;
 
 
@@ -520,7 +526,7 @@ Game.Game.prototype = {
         this.time.events.add(Phaser.Timer.SECOND * 3, function() {
            if(player_data.powered_up == 1) {
                for(var i = 0; i < NUM_ENEMIES; i++){
-                   if(enemy_data[i].running) {
+                   if(enemy_data[i].running && enemy_data[i].alive) {
                        enemy_sprites[i].play('runAway');
                    }
                }
@@ -532,10 +538,11 @@ Game.Game.prototype = {
             player_data.powered_up--;
             if(player_data.powered_up === 0){
                 for(var i = 0; i < NUM_ENEMIES; i++){
-
-                    enemy_sprites[i].play('walkRight');
-                    enemy_data[i].running = false;
-                    enemy_data.speed = GHOST_SPEED;
+                    if(enemy_data[i].running && enemy_data[i].alive) {
+                        enemy_sprites[i].play('walkRight');
+                        enemy_data[i].running = false;
+                        enemy_data.speed = GHOST_SPEED;
+                    }
                 }
             }
         });
@@ -548,32 +555,40 @@ Game.Game.prototype = {
         score += 50;
         scoreText.text = 'Score: ' + score;
 
-        if(level === 'pacmap'){
+        if(level === 'pacmap' ){
             for(var i =0; i < NUM_ENEMIES; i++) {
-                enemy_sprites[i].play('run');
+                if(enemy_data[i].alive)
+                    enemy_sprites[i].play('run');
             }
         }
-        for(var j = 0; j < NUM_ENEMIES; j++){
-            enemy_data[j].running = true;
-            enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
-        }
+        for(var j = 0; j < NUM_ENEMIES; j++) {
+            if (enemy_data[j].alive) {
+                enemy_data[j].running = true;
+                enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
 
+            }
+        }
 
     },
 
     enemyCollision: function (player, enemy){
         var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
-        if(enemy_obj.running){
-            enemy.kill();
+        if(enemy_obj.running && enemy_obj.alive){
+
+            enemy_obj.alive = false;
+            enemy.play('dead');
+            enemy.speed = DEAD_GHOST_SPEED;
+
 
             //update the score
             score += 500;
             scoreText.text = 'Score: ' + score;
 
-        }else {
+        }else if(enemy_obj.alive) {
             this.gameOver();
         }
     },
+
 
     gameOver: function(){
         //stop the timer
@@ -600,7 +615,7 @@ Game.Game.prototype = {
         this.physics.arcade.collide(player, layer);
 
         for(var i =0; i < NUM_ENEMIES; i++) {
-            game.physics.arcade.collide(enemy_sprites[i], layer);
+            this.physics.arcade.collide(enemy_sprites[i], layer);
             this.physics.arcade.overlap(player, enemy_sprites[i], this.enemyCollision, null, this);
         }
 
@@ -631,11 +646,11 @@ Game.Game.prototype = {
             this.turn(player, player_data);
         }
         //win condition
-        if(treats.total === 0  && sTreats.total === 0){
+        //if(treats.total === 0  && sTreats.total === 0){
             // treats.callAll('revive');
             // sTreats.callAll('revive');
             //this.gameOver();
-        }
+        //}
 
         for(var j = 0; j < NUM_ENEMIES; j++) {
             var enemy = enemy_data[j];
@@ -665,9 +680,10 @@ function enemy_movement_function_1(game, sprite, obj) {
     var enemy_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
     var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
 
-    if(Math.abs(enemy_x-ghostDenX) <= 1 && Math.abs(enemy_y-ghostDenY) <= 1){
+    if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0){
         obj.running = false;
         obj.speed = GHOST_SPEED;
+        obj.alive = true;
         //sprite.play('walkRight');
     }
 
