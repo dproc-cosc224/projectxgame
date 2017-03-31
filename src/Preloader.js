@@ -13,6 +13,7 @@ Game.Preloader.prototype = {
         var preloadProgress = this.add.sprite((this.world.width-540)*0.5, (this.world.height+170)*0.5, 'loading-progress');
         this.load.setPreloadSprite(preloadProgress);
         this.preloadResources();
+        //this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
     },
     preloadResources: function() {
@@ -57,7 +58,7 @@ Game.Preloader.resources = {
         //['bigBone', 'assets/img/bigBone.png'],
         //['cTile', 'assets/img/chompermazetiles.png'],
         //['cTile48', 'assets/img/chompermazetiles48.png'],
-        ['cTile32', 'assets/img/chompermazetiles32.png'],
+        ['cTile32', 'assets/img/chompermazetiles32g.png'],
         ['down', 'assets/img/down.png'],
         ['left', 'assets/img/left.png'],
         ['right', 'assets/img/right.png'],
@@ -88,7 +89,7 @@ Game.Preloader.resources = {
         //['csprites','assets/img/chompersprites.png', 64, 64],
         //['csprites48','assets/img/chompersprites48.png', 48, 48],
         ['csprites32','assets/img/chompersprites32.png', 32, 32],
-        ['cSpTile32', 'assets/img/chompermazetiles32.png', 32, 32]
+        ['cSpTile32', 'assets/img/chompermazetiles32g.png', 32, 32]
 
     ]
 
