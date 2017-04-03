@@ -68,7 +68,7 @@ Game.Preloader.resources = {
     ],
 
     'audio': [
-        ['level_music', ['assets/audio/DPROC_Main_Loop2.mp3', 'assets/audio/DPROC_Main_Loop2.ogg']]
+        ['level_music', ['assets/audio/finalMainLoop.mp3', 'assets/audio/finalMainLoop.ogg']]
     ],
 
     'tilemap': [
