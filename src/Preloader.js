@@ -64,11 +64,13 @@ Game.Preloader.resources = {
         ['right', 'assets/img/right.png'],
         ['up', 'assets/img/up.png'],
         ['circle', 'assets/img/circle.png'],
+        ['story-bg', 'assets/img/StoryBackground.png']
 
     ],
 
     'audio': [
-        ['level_music', ['assets/audio/finalMainLoop.mp3', 'assets/audio/finalMainLoop.ogg']]
+        ['level_music', ['assets/audio/finalMainLoop.mp3', 'assets/audio/finalMainLoop.ogg']],
+        ['menu_music', ['assets/audio/bigEat.mp3', 'assets/audio/bigEat.ogg']]
     ],
 
     'tilemap': [
@@ -90,16 +92,16 @@ Game.Preloader.resources = {
         //['csprites48','assets/img/chompersprites48.png', 48, 48],
         ['csprites32','assets/img/chompersprites32.png', 32, 32],
         ['cSpTile32', 'assets/img/chompermazetiles32g.png', 32, 32],
-        ['button-start', 'assets/img/play-btn.png', 180, 180],
+        ['button-start', 'assets/img/button-start.png', 180, 180],
         ['button-rules', 'assets/img/rules-btn.png', 110, 40],
         ['button-play', 'assets/img/play-btn.png', 475, 140],
-        ['button-continue', 'img/button-continue.png', 180, 180],
-        ['button-mainmenu', 'img/button-mainmenu.png', 180, 180],
-        ['button-restart', 'img/button-tryagain.png', 180, 180],
-        ['button-achievements', 'img/button-achievements.png', 110, 110],
-        ['button-pause', 'img/button-pause.png', 80, 80],
-        ['button-audio', 'img/button-sound.png', 80, 80],
-        ['button-back', 'img/button-back.png', 70, 70]
+        ['button-continue', 'assets/img/button-continue.png', 180, 180],
+        ['button-mainmenu', 'assets/img/button-mainmenu.png', 180, 180],
+        ['button-restart', 'assets/img/button-tryagain.png', 180, 180],
+        ['button-achievements', 'assets/img/button-achievements.png', 110, 110],
+        ['button-pause', 'assets/img/button-pause.png', 80, 80],
+        ['button-audio', 'assets/img/button-sound.png', 80, 80],
+        ['button-back', 'assets/img/button-back.png', 70, 70]
 
     ]
 

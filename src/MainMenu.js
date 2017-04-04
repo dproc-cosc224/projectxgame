@@ -13,10 +13,10 @@ Game.MainMenu.prototype = {
         game.Storage = this.game.plugins.add(Phaser.Plugin.Storage);
 
         game.Storage.initUnset('Highscore', 0);
-        var highscore = Storage.get('Highscore') || 0;
+        var highscore = game.Storage.get('Highscore') || 0;
 
-        var buttonStart = this.add.button(this.world.width-20, this.world.height-20, 'startBtn', this.clickStart, this, 1, 0, 2);
-        buttonStart.anchor.set(1);
+        var buttonStart = this.add.button(230, this.world.height-380, 'button-start', this.clickStart, this, 1, 0, 2);
+        buttonStart.anchor.set(0);
 
     },
 
@@ -24,7 +24,7 @@ Game.MainMenu.prototype = {
         //Game._playAudio('click');
         this.camera.fade(0, 200, false);
         this.time.events.add(200, function() {
-            this.state.start('Game');
+            this.state.start('Story');
         }, this);
     }
 };
