@@ -8,20 +8,16 @@ Game.MainMenu = function(game) { };
 
 Game.MainMenu.prototype = {
 
-    init:function(){
+    create:function(game){
 
-    },
+        game.Storage = this.game.plugins.add(Phaser.Plugin.Storage);
 
-    preload:function(){
+        game.Storage.initUnset('Highscore', 0);
+        var highscore = Storage.get('Highscore') || 0;
 
-    },
-
-    create:function(){
-
-        var buttonStart = this.add.button(this.world.width-20, this.world.height-20, 'button-start', this.clickStart, this, 1, 0, 2);
+        var buttonStart = this.add.button(this.world.width-20, this.world.height-20, 'startBtn', this.clickStart, this, 1, 0, 2);
         buttonStart.anchor.set(1);
 
-        this.state.start('Game');
     },
 
     clickStart: function() {

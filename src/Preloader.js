@@ -63,7 +63,7 @@ Game.Preloader.resources = {
         ['left', 'assets/img/left.png'],
         ['right', 'assets/img/right.png'],
         ['up', 'assets/img/up.png'],
-        ['circle', 'assets/img/circle.png']
+        ['circle', 'assets/img/circle.png'],
 
     ],
 
@@ -89,7 +89,17 @@ Game.Preloader.resources = {
         //['csprites','assets/img/chompersprites.png', 64, 64],
         //['csprites48','assets/img/chompersprites48.png', 48, 48],
         ['csprites32','assets/img/chompersprites32.png', 32, 32],
-        ['cSpTile32', 'assets/img/chompermazetiles32g.png', 32, 32]
+        ['cSpTile32', 'assets/img/chompermazetiles32g.png', 32, 32],
+        ['button-start', 'assets/img/play-btn.png', 180, 180],
+        ['button-rules', 'assets/img/rules-btn.png', 110, 40],
+        ['button-play', 'assets/img/play-btn.png', 475, 140],
+        ['button-continue', 'img/button-continue.png', 180, 180],
+        ['button-mainmenu', 'img/button-mainmenu.png', 180, 180],
+        ['button-restart', 'img/button-tryagain.png', 180, 180],
+        ['button-achievements', 'img/button-achievements.png', 110, 110],
+        ['button-pause', 'img/button-pause.png', 80, 80],
+        ['button-audio', 'img/button-sound.png', 80, 80],
+        ['button-back', 'img/button-back.png', 70, 70]
 
     ]
 
