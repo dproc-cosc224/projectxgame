@@ -10,11 +10,12 @@ Game.Game = function(game) { };
 var HEIGHT = 30;
 var WIDTH = 20;
 
-var ghostDenX = 10;
-var ghostDenY = 9;
+var ghostDenX = 9;
+var ghostDenY = 11;
 
 var GHOST_SPEED = 140;
 var GHOST_RUNNING_AWAY_SPEED = 80;
+var DEAD_GHOST_SPEED = 200;
 var GHOST_TURN_THRESHOLD = 7;
 
 var map;
@@ -48,6 +49,8 @@ var time;
 var timeText;
 var gameOverText;
 
+var killText;
+
 var player;
 var player_data;
 var level;
@@ -62,6 +65,7 @@ var buttonLeftDown;
 var buttonRightDown;
 var buttonUpDown;
 var buttonDownDown;
+var enemiesMoving = false;
 
 var moveDirection;
 
@@ -91,6 +95,7 @@ function make_enemy_data(startX, startY, movement_function) {
     enemy.move = movement_function;
     enemy.turnSpeed = 150;
     enemy.running = false;
+    enemy.alive = true;
     return enemy;
 }
 
@@ -157,8 +162,8 @@ Game.Game.prototype = {
             player_startPosX = 18;
             player_startPosY = 19;
 
-            enemyStartX = 4;
-            enemyStartY = 7;
+            enemyStartX = 9;
+            enemyStartY = 11;
 
             enemy_data= [
 
@@ -179,11 +184,17 @@ Game.Game.prototype = {
             sTreats = this.add.physicsGroup();
 
             map.createFromTiles(treatIndex, safetile, 'dot32', layer, treats);
-            map.createFromTiles(sTreatsIndex, safetile, 'bigDot32', layer, sTreats);
+            map.createFromTiles(sTreatsIndex, safetile, 'cSpTile32', layer, sTreats);
 
+            //add blink animations to bigdots
+            sTreats.callAll('animations.add', 'animations', 'blink', [4, 8], 3, true);
+            sTreats.callAll('animations.play', 'animations', 'blink');
 
         }
 
+        this.time.events.add(Phaser.Timer.SECOND * 3, function() {
+            enemiesMoving = true;
+        });
 
         //treats.setAll('x', 6, false, false, 1);
         //treats.setAll('y', 6, false, false, 1);
@@ -198,7 +209,7 @@ Game.Game.prototype = {
         timer.loop(1000, this.updateCounter, this);
         timer.start();
         time = 1000;
-        timeText = this.add.text(400, 32, 'Time Left : ' + time, {fontSize: '32px', fill: '#ffffff'});
+        timeText = this.add.text(400, 32, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         timeText.visible = true;
 
         //create the player
@@ -219,10 +230,6 @@ Game.Game.prototype = {
             player.animations.add('walkUp', [52, 53], 10, true);
             player.animations.add('walkDown', [24, 25],10, true);
         }
-        // player.animations.add('walkLeft', [0, 1 , 2 , 1], 20, true);
-        // player.animations.add('walkRight', [3, 4, 5, 3], 20, true);
-        // player.animations.add('walkUp', [6, 7, 8, 6], 20, true);
-        // player.animations.add('walkDown', [9, 10, 11, 10], 20, true);
 
 
         this.physics.arcade.enable(player);
@@ -235,61 +242,67 @@ Game.Game.prototype = {
                 enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
             }else if(level === 'pacmap'){
                 enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
-                enemy.animations.add('moving', [0, 1], 10, true);
+                enemy.animations.add('walkRight', [0, 1], 10, true);
+                enemy.animations.add('walkDown', [14, 15], 10, true);
+                enemy.animations.add('walkLeft', [28, 29], 10, true);
+                enemy.animations.add('walkUp', [42, 43], 10, true);
                 enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
-                enemy.play('moving');
+                enemy.animations.add('run', [12], 1, true);
+                enemy.animations.add('score', [54], 1, true);
+                enemy.animations.add('dead', [40], 1, true);
+                enemy.play('walkRight');
             }
             enemy.anchor.setTo(0.5, 0.5);
             this.physics.arcade.enable(enemy);
             enemy.body.collideWorldBounds = true;
             enemy_sprites[i] = enemy;
-            this.move(enemy_sprites[i], enemy_data[i]);
+            //this.move(enemy_sprites[i], enemy_data[i]);
         }
 
         //set the score to zero
         score = 0;
-        scoreText = this.add.text(32 ,32, 'score : 0', { fontSize: '32px', fill: '#ffffff'});
+        scoreText = this.add.text(32 ,32, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         scoreText.visible = true;
 
         //set the gameOverText and set it to not visible
-        gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , { fontSize: '32px', fill: '#ffffff'});
+        gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         gameOverText.visible = false;
 
 
-        upButton = this.add.button((9.2 * gridsize), (24 * gridsize), 'up',  null, this, 0,1,0,1);
-        upButton.scale.setTo(0.4,0.4);
+        upButton = this.add.button((8.75 * gridsize), (22 * gridsize), 'up',  null, this, 0,1,0,1);
+        upButton.scale.setTo(0.6,0.6);
         upButton.events.onInputOver.add(function(){ buttonUpDown = true; });
         upButton.events.onInputOut.add(function(){ buttonUpDown = false;});
         upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
         upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
         //upButton.animations.add('press', [0,1,2,1],20, false);
 
-        downButton = this.add.button((9.2 * gridsize), (26.75 * gridsize), 'down',  null, this, 0,1,0,1);
-        downButton.scale.setTo(0.4,0.4);
+        downButton = this.add.button((8.75 * gridsize), (25.5 * gridsize), 'down',  null, this, 0,1,0,1);
+        downButton.scale.setTo(0.6,0.6);
         downButton.events.onInputOver.add(function(){ buttonDownDown = true; });
         downButton.events.onInputOut.add(function(){ buttonDownDown = false;});
         downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
         downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
         //downButton.animations.add('press', [0,1,2,1],20, false);
 
-        rightButton = this.add.button((10.45 * gridsize), (25.65 * gridsize), 'right',  null, this, 0,1,0,1);
-        rightButton.scale.setTo(.4,.4);
+        rightButton = this.add.button((10.65 * gridsize), (24 * gridsize), 'right',  null, this, 0,1,0,1);
+        rightButton.scale.setTo(.6,.6);
         rightButton.events.onInputOver.add(function(){ buttonRightDown = true; });
         rightButton.events.onInputOut.add(function(){ buttonRightDown = false;});
         rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
         rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
         //rightButton.animations.add('press', [0,1,2,1],20, false);
 
-        leftButton = this.add.button((7.45 * gridsize), (25.65 * gridsize), 'left',  null, this, 0,1,0,1);
-        leftButton.scale.setTo(.4,.4);
+        leftButton = this.add.button((6.1 * gridsize), (24 * gridsize), 'left',  null, this, 0,1,0,1);
+        leftButton.scale.setTo(.6,.6);
         leftButton.events.onInputOver.add(function(){ buttonLeftDown = true; });
         leftButton.events.onInputOut.add(function(){ buttonLeftDown = false;});
         leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
         leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
         //leftButton.animations.add('press', [0,1,2,1],20, false);
 
-        var circle = this.add.sprite(( 9.45 * gridsize), (25.85 * gridsize), 'circle', 0);
-        circle.scale.setTo(.3,.3);
+        var circle = this.add.sprite(( 9.25 * gridsize), (24.60 * gridsize), 'circle', 0);
+        circle.scale.setTo(.4,.4);
 
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -305,34 +318,7 @@ Game.Game.prototype = {
         //game.input.onDown.add(this.beginSwipe, this);
 
     },
-/*    tap : function(){
-        this.game.input.onDown.remove(this.tap);
 
-        var tapPosX = this.game.input.worldX;
-        var tapPosY = this.game.input.worldY;
-
-
-
-
-        if(Math.abs(tapPosX)>Math.abs(tapPosY)*2 && Math.abs(tapPosX) > 10){
-            if(tapPosX> 0 && player_data.current !== Phaser.LEFT){
-                this.checkDirection(player, player_data, Phaser.LEFT);
-            }else if(tapPosX < 0 && player_data.current !== Phaser.RIGHT){
-                this.checkDirection(player, player_data, Phaser.RIGHT);
-            }
-        }
-        if(Math.abs(tapPosY)>Math.abs(tapPosX)*2 && Math.abs(tapPosY)>10){
-            if(tapPosY>0 && player_data.current !== Phaser.UP){
-                this.checkDirection(player, player_data, Phaser.UP);
-            }else if (tapPosY < 0 && player_data.current !== Phaser.DOWN){
-                this.checkDirection(player, player_data, Phaser.DOWN);
-            }
-        }
-
-        this.game.input.onDown.add(this.tap, this);
-
-
-    },*/
 
     updateCounter : function(){
         time--;
@@ -417,22 +403,19 @@ Game.Game.prototype = {
         sprite.scale.x = 1;
         sprite.angle = 0;
 
-        if(obj === player_data) {
+        if(((enemy_data.indexOf(obj) > -1) && (!obj.running)) || obj === player_data) {
             if(obj.turning === Phaser.RIGHT){
-                player.play('walkRight');
+                sprite.play('walkRight');
             }
             else if(obj.turning === Phaser.LEFT){
-                player.play('walkLeft');
+                sprite.play('walkLeft');
             }
             else if(obj.turning === Phaser.UP){
-                player.play('walkUp');
+                sprite.play('walkUp');
             }
-            else if (obj.turning === Phaser.DOWN){
-                player.play('walkDown');
+            else if (obj.turning === Phaser.DOWN) {
+                sprite.play('walkDown');
             }
-        }else{
-            // rotate the sprite
-            //this.add.tween(sprite).to( {angle: this.getAngle(sprite, obj, obj.turning) }, obj.turnSpeed, "Linear", true);
         }
         moveDirection = null;
 
@@ -523,7 +506,7 @@ Game.Game.prototype = {
     },
 
     eatTreats: function (player, treat){
-        //remove the femur
+        //remove the dot
         treat.kill();
 
         //update the score
@@ -533,56 +516,79 @@ Game.Game.prototype = {
     },
 
     eatSTreats: function (player, treat){
-        //remove the ham
+        //remove the big dot
         treat.kill();
 
         // TODO
         // Make a sound or change appearance of player to indicate they have a power-up
         player_data.powered_up++;
 
+        this.time.events.add(Phaser.Timer.SECOND * 3, function() {
+           if(player_data.powered_up == 1) {
+               for(var i = 0; i < NUM_ENEMIES; i++){
+                   if(enemy_data[i].running && enemy_data[i].alive) {
+                       enemy_sprites[i].play('runAway');
+                   }
+               }
+           }
+        });
+
         this.time.events.add(Phaser.Timer.SECOND * 4, function() {
-            // TODO
-            // make a sound or change appearance when power_up ends
+
             player_data.powered_up--;
             if(player_data.powered_up === 0){
                 for(var i = 0; i < NUM_ENEMIES; i++){
-                    enemy_sprites[i].play('moving');
-                    enemy_data[i].running = false;
-                    enemy_data.speed = GHOST_SPEED;
+                    if(enemy_data[i].running && enemy_data[i].alive) {
+                        enemy_sprites[i].play('walkRight');
+                        enemy_data[i].running = false;
+                        enemy_data.speed = GHOST_SPEED;
+                    }
                 }
             }
         });
+
+
+
+
 
         //update the score
         score += 50;
         scoreText.text = 'Score: ' + score;
 
-        if(level === 'pacmap'){
+        if(level === 'pacmap' ){
             for(var i =0; i < NUM_ENEMIES; i++) {
-                enemy_sprites[i].play('runAway');
+                if(enemy_data[i].alive)
+                    enemy_sprites[i].play('run');
             }
         }
-        for(var j = 0; j < NUM_ENEMIES; j++){
-            enemy_data[j].running = true;
-            enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
-        }
+        for(var j = 0; j < NUM_ENEMIES; j++) {
+            if (enemy_data[j].alive) {
+                enemy_data[j].running = true;
+                enemy_data[j].speed = GHOST_RUNNING_AWAY_SPEED;
 
+            }
+        }
 
     },
 
     enemyCollision: function (player, enemy){
         var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
-        if(enemy_obj.running){
-            enemy.kill();
+        if(enemy_obj.running && enemy_obj.alive){
+
+            enemy_obj.alive = false;
+            enemy.play('dead');
+            enemy.speed = DEAD_GHOST_SPEED;
+
 
             //update the score
             score += 500;
             scoreText.text = 'Score: ' + score;
 
-        }else {
+        }else if(enemy_obj.alive) {
             this.gameOver();
         }
     },
+
 
     gameOver: function(){
         //stop the timer
@@ -609,7 +615,7 @@ Game.Game.prototype = {
         this.physics.arcade.collide(player, layer);
 
         for(var i =0; i < NUM_ENEMIES; i++) {
-            game.physics.arcade.collide(enemy_sprites[i], layer);
+            this.physics.arcade.collide(enemy_sprites[i], layer);
             this.physics.arcade.overlap(player, enemy_sprites[i], this.enemyCollision, null, this);
         }
 
@@ -640,11 +646,11 @@ Game.Game.prototype = {
             this.turn(player, player_data);
         }
         //win condition
-        if(treats.total === 0  && sTreats.total === 0){
+        //if(treats.total === 0  && sTreats.total === 0){
             // treats.callAll('revive');
             // sTreats.callAll('revive');
             //this.gameOver();
-        }
+        //}
 
         for(var j = 0; j < NUM_ENEMIES; j++) {
             var enemy = enemy_data[j];
@@ -661,7 +667,10 @@ Game.Game.prototype = {
             directions[Phaser.UP] = map.getTileAbove(index, x, y);
             directions[Phaser.DOWN] = map.getTileBelow(index, x, y);
 
-            enemy.move(this, enemy_sprite, enemy);
+            if(enemiesMoving){
+                enemy.move(this, enemy_sprite, enemy);
+            }
+
         }
     }
 };
@@ -671,10 +680,11 @@ function enemy_movement_function_1(game, sprite, obj) {
     var enemy_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
     var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
 
-    if(Math.abs(enemy_x-ghostDenX) <= 1 && Math.abs(enemy_y-ghostDenY) <= 1){
+    if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0){
         obj.running = false;
         obj.speed = GHOST_SPEED;
-        sprite.play('moving');
+        obj.alive = true;
+        //sprite.play('walkRight');
     }
 
     var running = obj.running;

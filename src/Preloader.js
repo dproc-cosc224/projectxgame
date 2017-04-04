@@ -13,6 +13,7 @@ Game.Preloader.prototype = {
         var preloadProgress = this.add.sprite((this.world.width-540)*0.5, (this.world.height+170)*0.5, 'loading-progress');
         this.load.setPreloadSprite(preloadProgress);
         this.preloadResources();
+        //this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
     },
     preloadResources: function() {
@@ -57,7 +58,7 @@ Game.Preloader.resources = {
         //['bigBone', 'assets/img/bigBone.png'],
         //['cTile', 'assets/img/chompermazetiles.png'],
         //['cTile48', 'assets/img/chompermazetiles48.png'],
-        ['cTile32', 'assets/img/chompermazetiles32.png'],
+        ['cTile32', 'assets/img/chompermazetiles32g.png'],
         ['down', 'assets/img/down.png'],
         ['left', 'assets/img/left.png'],
         ['right', 'assets/img/right.png'],
@@ -67,7 +68,7 @@ Game.Preloader.resources = {
     ],
 
     'audio': [
-        ['level_music', ['assets/audio/DPROC_Main_Loop2.mp3', 'assets/audio/DPROC_Main_Loop2.ogg']]
+        ['level_music', ['assets/audio/finalMainLoop.mp3', 'assets/audio/finalMainLoop.ogg']]
     ],
 
     'tilemap': [
@@ -75,8 +76,9 @@ Game.Preloader.resources = {
         //['pupmap', 'assets/maps/pupmap.csv'],
         //['testmap1', 'assets/maps/testmap1.csv'],
         //['pmap48', 'assets/maps/pmap48.csv'],
-        ['pmap32', 'assets/maps/pmap32.csv'],
-        ['pmap', 'assets/maps/pmap.csv']
+        //['pmap', 'assets/maps/pmap.csv'],
+        ['pmap32', 'assets/maps/pmap32.csv']
+
 
 
     ],
@@ -86,7 +88,9 @@ Game.Preloader.resources = {
         //['dog', 'assets/img/dog.png', 64, 64],
         //['csprites','assets/img/chompersprites.png', 64, 64],
         //['csprites48','assets/img/chompersprites48.png', 48, 48],
-        ['csprites32','assets/img/chompersprites32.png', 32, 32]
+        ['csprites32','assets/img/chompersprites32.png', 32, 32],
+        ['cSpTile32', 'assets/img/chompermazetiles32g.png', 32, 32]
+
     ]
 
 };
