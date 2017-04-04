@@ -65,9 +65,12 @@ Game.Preloader.resources = {
         ['up', 'assets/img/up.png'],
         ['circle', 'assets/img/circle.png'],
         ['story-bg', 'assets/img/Packground.png'],
-        ['bg-story', 'assets/img/StoryBackground.png'],
+        ['bg-story', 'assets/img/StoryBackgroundBlur.png'],
         ['logo', 'assets/img/Logo.png'],
-        ['instructions', 'assets/img/instructions.png']
+        ['instructions', 'assets/img/instructions.png'],
+        ['overlay', 'assets/img/overlay.png'],
+        ['ui-bg', 'assets/img/ui-bg.png'],
+        ['particle', 'assets/img/particle.png']
 
     ],
 

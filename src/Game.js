@@ -118,11 +118,6 @@ Game.Game.prototype = {
         music = game.add.audio('level_music');
         music.play('', 0, 0.5, true);
 
-        // map = this.add.tilemap('pupmap', gridsize, gridsize);
-        // map.addTilesetImage('ptiles');
-
-
-
         if (level === 'dog') {
 
             map = this.add.tilemap('testmap1', gridsize, gridsize);
@@ -257,6 +252,8 @@ Game.Game.prototype = {
             enemy.body.collideWorldBounds = true;
             enemy_sprites[i] = enemy;
             //this.move(enemy_sprites[i], enemy_data[i]);
+
+
         }
 
         //set the score to zero
@@ -317,8 +314,48 @@ Game.Game.prototype = {
         this.move(player, player_data);
         //game.input.onDown.add(this.beginSwipe, this);
 
+        var fontTitle = { font: "48px Arial", fill: "#000", stroke: "#FFFF00", strokeThickness: 10 };
+
+        this.screenGameoverGroup = this.add.group();
+        this.screenGameoverText = this.add.text(this.world.width*0.5, 100, 'Game over', fontTitle);
+        this.screenGameoverText.anchor.set(0.5,0);
+        this.screenGameoverBack = this.add.button(50, this.world.height-250, 'button-mainmenu', this.stateBack, this, 1, 0, 2);
+        this.screenGameoverBack.anchor.set(0,1);
+        this.screenGameoverRestart = this.add.button(this.world.width-230, this.world.height-250, 'button-restart', this.stateRestart, this, 1, 0, 2);
+        this.screenGameoverRestart.anchor.set(0,1);
+        this.screenGameoverScore = this.add.text(this.world.width*0.5, 300, 'Score: '+score, fontTitle);
+        this.screenGameoverScore.anchor.set(0.5,0.5);
+        this.screenGameoverGroup.add(this.screenGameoverText);
+        this.screenGameoverGroup.add(this.screenGameoverBack);
+        this.screenGameoverGroup.add(this.screenGameoverRestart);
+        this.screenGameoverGroup.add(this.screenGameoverScore);
+        this.screenGameoverGroup.visible = false;
+
     },
 
+    spawnEmitter: function(item, particle, number, lifespan, frequency, offsetX, offsetY, gravity) {
+        offsetX = offsetX || 0;
+        offsetY = offsetY || 0;
+        lifespan = lifespan || 2000;
+        frequency = frequency || 0;
+        var emitter = this.game.add.emitter(item.x+offsetX, item.y+offsetY, number);
+        emitter.maxParticles = number;
+        emitter.makeParticles(particle);
+        emitter.setXSpeed(-500, 500);
+        emitter.setYSpeed(-700, 300);
+        emitter.setScale(4, 1, 4, 1, 500, Phaser.Easing.Linear.None);
+        emitter.gravity = gravity || 250;
+        emitter.start(false, lifespan, frequency, number);
+    },
+
+    stateBack: function(game) {
+        this.screenGameoverGroup.visible = true;
+        this.state.start('MainMenu');
+    },
+
+    stateRestart: function() {
+        this.state.restart(true);
+    },
 
     updateCounter : function(){
         time--;
@@ -600,13 +637,27 @@ Game.Game.prototype = {
             enemy_sprites[i].kill();
         }
 
-        //set the visibilty of the text
-        gameOverText.text = 'Congratulations! \n You Scored : ' + score;
+        // display game over ui
+        this.gameoverScoreTween();
+        this.screenGameoverGroup.visible = true;
 
-        gameOverText.visible = true;
-        scoreText.visible = false;
-        timeText.visible = false;
+    },
 
+    gameoverScoreTween: function() {
+        this.screenGameoverScore.setText('Score: 0');
+        if(score) {
+            this.tweenedPoints = 0;
+            var pointsTween = this.add.tween(this);
+            pointsTween.to({ tweenedPoints: score }, 1000, Phaser.Easing.Linear.None, true, 500);
+            pointsTween.onUpdateCallback(function(){
+                this.screenGameoverScore.setText('Score: '+Math.floor(this.tweenedPoints));
+            }, this);
+            pointsTween.onComplete.addOnce(function(){
+                this.screenGameoverScore.setText('Score: '+ score);
+                this.spawnEmitter(this.screenGameoverScore, 'particle', 20, 300);
+            }, this);
+            pointsTween.start();
+        }
     },
 
     update: function(game) {
