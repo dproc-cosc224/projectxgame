@@ -76,7 +76,7 @@ Game.Preloader.resources = {
 
     'audio': [
         ['level_music', ['assets/audio/finalMainLoop.mp3', 'assets/audio/finalMainLoop.ogg']],
-        ['menu_music', ['assets/audio/menuLoop.mp3', 'assets/audio/menuLoop.ogg']]
+        ['menu_music', ['assets/audio/menuLoop.mp3', 'assets/audio/menuLoop.ogg']],
         ['big_eat_sfx', ['assets/audio/bigEat.mp3', 'assets/audio/bigEat.ogg']]
     ],
 

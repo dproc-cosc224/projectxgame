@@ -639,6 +639,7 @@ Game.Game.prototype = {
     gameOver: function(){
         //stop the timer
         timer.stop();
+		music.stop();
 
         //remove the player
         player.kill();
