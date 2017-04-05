@@ -554,7 +554,16 @@ Game.Game.prototype = {
 
     eatSTreats: function (player, treat){
         //remove the big dot
+		var temp = music.volume;
+		music.volume=0;
+		var sfx = this.add.audio('big_eat_sfx');
+		sfx.volume = temp;
+		sfx.play('',0,0.5,true);
         treat.kill();
+		this.time.events.add(Phaser.Timer.SECOND, function(){
+			music.volume = temp;
+		});
+
 
         // TODO
         // Make a sound or change appearance of player to indicate they have a power-up
