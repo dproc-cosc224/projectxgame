@@ -519,10 +519,10 @@ Game.Game.prototype = {
         music.stop();
 
         //remove the player
-        player.kill();
-        for(var i = 0; i < NUM_ENEMIES; i++) {
-            enemy_sprites[i].kill();
-        }
+        //player.kill();
+        //for(var i = 0; i < NUM_ENEMIES; i++) {
+        //    enemy_sprites[i].kill();
+        //}
 
         this.black = this.game.add.sprite(0, 0, 'black');
         this.black.alpha = 0.7;

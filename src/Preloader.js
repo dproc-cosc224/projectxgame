@@ -72,7 +72,8 @@ Game.Preloader.resources = {
         ['ui-bg', 'assets/img/ui-bg.png'],
         ['particle', 'assets/img/particle.png'],
         ['black', 'assets/img/black.png'],
-        ['cup', 'img/trophy.png'],
+        ['cup', 'assets/img/trophy.png'],
+        ['congrats', 'assets/img/congrats.png'],
         ['coupon-one', 'assets/img/dealercoupon.png'],
         ['coupon-two', 'assets/img/dealercoupontwo.png'],
         ['coupon-three', 'assets/img/dealercouponthree.png']
