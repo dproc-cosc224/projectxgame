@@ -71,8 +71,15 @@ Game.Preloader.resources = {
         ['overlay', 'assets/img/overlay.png'],
         ['ui-bg', 'assets/img/ui-bg.png'],
         ['particle', 'assets/img/particle.png'],
-        ['black', 'assets/img/black.png']
+        ['black', 'assets/img/black.png'],
+        ['coupon-one', 'assets/img/dealercoupon.png'],
+        ['coupon-two', 'assets/img/dealercoupontwo.png'],
+        ['coupon-three', 'assets/img/dealercouponthree.png']
 
+    ],
+
+    'atlasXML': [
+        ['spark', 'assets/atlasXML/spark.png', 'assets/atlasXML/spark.xml']
     ],
 
     'audio': [
@@ -109,7 +116,8 @@ Game.Preloader.resources = {
         ['button-achievements', 'assets/img/button-achievements.png', 110, 110],
         ['button-pause', 'assets/img/button-pause.png', 80, 80],
         ['button-audio', 'assets/img/button-sound.png', 80, 80],
-        ['button-back', 'assets/img/button-back.png', 70, 70]
+        ['button-back', 'assets/img/button-back.png', 70, 70],
+        ['claim-prize-btn', 'assets/img/claimPrizes.png', 400, 60]
 
     ]
 

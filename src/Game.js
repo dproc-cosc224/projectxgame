@@ -319,15 +319,9 @@ Game.Game.prototype = {
         this.screenGameoverGroup = this.add.group();
         this.screenGameoverText = this.add.text(this.world.width*0.5, 100, 'Game over', fontTitle);
         this.screenGameoverText.anchor.set(0.5,0);
-        this.screenGameoverBack = this.add.button(50, this.world.height-250, 'button-mainmenu', this.stateBack, this, 1, 0, 2);
-        this.screenGameoverBack.anchor.set(0,1);
-        this.screenGameoverRestart = this.add.button(this.world.width-230, this.world.height-250, 'button-restart', this.stateRestart, this, 1, 0, 2);
-        this.screenGameoverRestart.anchor.set(0,1);
         this.screenGameoverScore = this.add.text(this.world.width*0.5, 300, 'Score: '+score, fontTitle);
         this.screenGameoverScore.anchor.set(0.5,0.5);
         this.screenGameoverGroup.add(this.screenGameoverText);
-        this.screenGameoverGroup.add(this.screenGameoverBack);
-        this.screenGameoverGroup.add(this.screenGameoverRestart);
         this.screenGameoverGroup.add(this.screenGameoverScore);
         this.screenGameoverGroup.visible = false;
 
@@ -634,7 +628,7 @@ Game.Game.prototype = {
     },
 
 
-    gameOver: function(){
+    gameOver: function(game){
         //TODO Add an animation/sound on enemy collision
 
         //stop the timer
@@ -647,13 +641,47 @@ Game.Game.prototype = {
             enemy_sprites[i].kill();
         }
 
+        this.black = this.game.add.sprite(0, 0, 'black');
+        this.black.alpha = 0.7;
+
+        this.collectbutton = this.add.button(this.world.width/2,
+            this.world.height-100, 'claim-prize-btn', this.collect, this, 1, 0, 2);
+        this.collectbutton.anchor.x = 0.5;
+        this.collectbutton.anchor.y = 0.5;
+        this.collectbutton.alpha = 0;
+
+        this.couponOne = this.game.add.sprite(-270, 315, 'coupon-one');
+        this.couponOne.anchor.x = 0.5;
+        this.couponOne.alpha = 0;
+
+        this.couponTwo = this.game.add.sprite(-270, 480, 'coupon-two');
+        this.couponTwo.anchor.x = 0.5;
+        this.couponTwo.alpha = 0;
+
+        this.couponThree = this.game.add.sprite(-270, 645, 'coupon-three');
+        this.couponThree.anchor.x = 0.5;
+        this.couponThree.alpha = 0;
+
+        this.spark_emitter = this.game.add.emitter(this.game.world.centerX, -32, 640);
+        this.spark_emitter.makeParticles('spark', [0,1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19]);
+        this.spark_emitter.maxParticleScale = 0.6;
+        this.spark_emitter.minParticleScale = 0.2;
+        this.spark_emitter.setYSpeed(20, 100);
+        this.spark_emitter.gravity = 100;
+        this.spark_emitter.width = this.game.world.width * 1.5;
+        this.spark_emitter.minRotation = 0;
+        this.spark_emitter.maxRotation = 40;
+
         // display game over ui
-        this.gameoverScoreTween();
+        this.game.world.bringToTop(this.screenGameoverGroup);
+        this.fadeToBlack = this.game.add.tween(this.black).to({alpha: 0.75}, 1000, "Linear", true);
         this.screenGameoverGroup.visible = true;
+        this.fadeToBlack.onComplete.add(this.gameoverScoreTween, this);
 
     },
 
     gameoverScoreTween: function() {
+        this.spark_emitter.start(false, 14000, 20);
         this.screenGameoverScore.setText('Score: 0');
         if(score) {
             this.tweenedPoints = 0;
@@ -664,7 +692,6 @@ Game.Game.prototype = {
             }, this);
             pointsTween.onComplete.addOnce(function(){
                 this.screenGameoverScore.setText('Score: '+ score);
-                this.spawnEmitter(this.screenGameoverScore, 'particle', 20, 300);
             }, this);
             pointsTween.start();
         }
@@ -675,6 +702,7 @@ Game.Game.prototype = {
         //make sure the level collides with the player
         this.physics.arcade.collide(player, layer);
 
+        // collide enemies with the world and the player
         for(var i =0; i < NUM_ENEMIES; i++) {
             this.physics.arcade.collide(enemy_sprites[i], layer);
             this.physics.arcade.overlap(player, enemy_sprites[i], this.enemyCollision, null, this);
@@ -713,43 +741,36 @@ Game.Game.prototype = {
             //this.gameOver();
         //}
 
+        // for each enemy
         for(var j = 0; j < NUM_ENEMIES; j++) {
             var enemy = enemy_data[j];
             var enemy_sprite = enemy_sprites[j];
 
-            enemy.marker.x = game.math.snapToFloor(Math.floor(enemy_sprite.x), gridsize) / gridsize;
-            enemy.marker.y = game.math.snapToFloor(Math.floor(enemy_sprite.y), gridsize) / gridsize;
-
-            x = enemy.marker.x;
-            y = enemy.marker.y;
-
-            directions[Phaser.LEFT] = map.getTileLeft(index, x, y);
-            directions[Phaser.RIGHT] = map.getTileRight(index, x, y);
-            directions[Phaser.UP] = map.getTileAbove(index, x, y);
-            directions[Phaser.DOWN] = map.getTileBelow(index, x, y);
-
             if(enemiesMoving){
                 enemy.move(this, enemy_sprite, enemy);
             }
-
         }
     }
 };
 
+
 function enemy_movement_function_1(game, sprite, obj) {
 
+    // The movement function starts at the target point and searches until it
+    // finds the ghosts's position. Set the ghost position.
     var enemy_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
     var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
+
 
     if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0){
         obj.running = false;
         obj.speed = GHOST_SPEED;
         obj.alive = true;
-        //sprite.play('walkRight');
     }
 
     var running = obj.running;
 
+    // set start point for the search
     var startX = Phaser.Math.snapToFloor(Math.floor(player.x), gridsize) / gridsize;
     var startY = Phaser.Math.snapToFloor(Math.floor(player.y), gridsize) / gridsize;
     if(running){
@@ -757,24 +778,26 @@ function enemy_movement_function_1(game, sprite, obj) {
         startY = ghostDenY;
     }
 
+    // index is the index of our tilemap layer
     var index = layer.index;
 
+    // seen array will track the tiles we have already looked at
     var seen = new Array(WIDTH);
     for(var i = 0; i < WIDTH; i++) {
         seen[i] = new Array(HEIGHT).fill(false);
     }
 
-
     // path finding variables
     var target = Phaser.NONE;
-    var directions = [];
+    // possible directions
     var dirs = [Phaser.LEFT, Phaser.RIGHT, Phaser.UP, Phaser.DOWN];
+    // corresponding x,y vectors for each direction
     var vectors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
-    // use a queue for depth/breadth first searching
+    // use a queue for searching
     var queue = [];
-    
-    // push initial state into queue then start search 
+
+    // push initial state into queue then start search
     // starting point of search is set to the location of the pacman
     // unless the ghosts are running, in which case the starting point
     // is set to be the center of the map
@@ -793,7 +816,7 @@ function enemy_movement_function_1(game, sprite, obj) {
             current = queue.shift();
         }
 
-        // extract current x and y 
+        // extract current x and y
         var current_x = current[0];
         var current_y = current[1];
 
@@ -809,28 +832,28 @@ function enemy_movement_function_1(game, sprite, obj) {
         // If the target is there then we found our path, try to move the ghost there
         // else if the tile is valid and hasn't been seen then push it into the queue
         for(var j = 0; j < 4; j++){
-            // looping through directions
-            
+
+            // set current target
             target = dirs[j];
             // extract the x,y coordinates of current tile
             var x = current_x + vectors[j][0];
             var y = current_y + vectors[j][1];
 
-            // check if the tile is in bounds and is a moveable tile 
+            // check if the tile is in bounds and is a moveable tile
             if(directions[target] !== null && directions[target].index === safetile){
-                
+
                 // check if the tile contains the ghost
                 if(x === enemy_x && y === enemy_y){
                     target = opposites[target];
-                    // check if ghosts is already moving in correct direction 
+                    // check if ghosts is already moving in correct direction
                     if(obj.current !== target){
                         game.checkDirection(sprite, obj, target);
-                        // check if ghosts can turn to target direction 
+                        // check if ghosts can turn to target direction
                         if(obj.turning !== Phaser.NONE){
                             game.turn(sprite, obj);
                         }
                     }
-                    // path was found, exit the function 
+                    // path was found, exit the function
                     return;
                 }
 
