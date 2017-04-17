@@ -146,7 +146,7 @@ Game.Game.prototype = {
         sTreats.callAll('animations.play', 'animations', 'blink');
 
 
-        this.time.events.add(Phaser.Timer.SECOND * 3, function() {
+        this.time.events.add(Phaser.Timer.SECOND * 2, function() {
             enemiesMoving = true;
         });
 
@@ -202,35 +202,35 @@ Game.Game.prototype = {
 
 
         upButton = this.add.button((8.75 * gridsize), (22 * gridsize), 'up',  null, this, 0,1,0,1);
-        upButton.scale.setTo(0.6,0.6);
+        upButton.scale.setTo(0.6, 0.6);
         upButton.events.onInputOver.add(function(){ buttonUpDown = true; });
         upButton.events.onInputOut.add(function(){ buttonUpDown = false;});
         upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
         upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
 
         downButton = this.add.button((8.75 * gridsize), (25.5 * gridsize), 'down',  null, this, 0,1,0,1);
-        downButton.scale.setTo(0.6,0.6);
+        downButton.scale.setTo(0.6, 0.6);
         downButton.events.onInputOver.add(function(){ buttonDownDown = true; });
         downButton.events.onInputOut.add(function(){ buttonDownDown = false;});
         downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
         downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
 
         rightButton = this.add.button((10.65 * gridsize), (24 * gridsize), 'right',  null, this, 0,1,0,1);
-        rightButton.scale.setTo(.6,.6);
+        rightButton.scale.setTo(0.6, 0.6);
         rightButton.events.onInputOver.add(function(){ buttonRightDown = true; });
         rightButton.events.onInputOut.add(function(){ buttonRightDown = false;});
         rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
         rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
 
         leftButton = this.add.button((6.1 * gridsize), (24 * gridsize), 'left',  null, this, 0,1,0,1);
-        leftButton.scale.setTo(.6,.6);
+        leftButton.scale.setTo(0.6, 0.6);
         leftButton.events.onInputOver.add(function(){ buttonLeftDown = true; });
         leftButton.events.onInputOut.add(function(){ buttonLeftDown = false;});
         leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
         leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
 
         var circle = this.add.sprite(( 9.25 * gridsize), (24.60 * gridsize), 'circle', 0);
-        circle.scale.setTo(.4,.4);
+        circle.scale.setTo(0.4, 0.4);
 
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -247,34 +247,9 @@ Game.Game.prototype = {
 
         var fontTitle = { font: "48px Arial", fill: "#000", stroke: "#FFFF00", strokeThickness: 10 };
 
-        this.screenGameoverGroup = this.add.group();
-        this.screenGameoverText = this.add.text(this.world.width*0.5, 100, 'Game over', fontTitle);
-        this.screenGameoverText.anchor.set(0.5,0);
-        this.screenGameoverScore = this.add.text(this.world.width*0.5, 300, 'Score: '+score, fontTitle);
-        this.screenGameoverScore.anchor.set(0.5,0.5);
-        this.screenGameoverGroup.add(this.screenGameoverText);
-        this.screenGameoverGroup.add(this.screenGameoverScore);
-        this.screenGameoverGroup.visible = false;
-
-    },
-
-    spawnEmitter: function(item, particle, number, lifespan, frequency, offsetX, offsetY, gravity) {
-        offsetX = offsetX || 0;
-        offsetY = offsetY || 0;
-        lifespan = lifespan || 2000;
-        frequency = frequency || 0;
-        var emitter = this.game.add.emitter(item.x+offsetX, item.y+offsetY, number);
-        emitter.maxParticles = number;
-        emitter.makeParticles(particle);
-        emitter.setXSpeed(-500, 500);
-        emitter.setYSpeed(-700, 300);
-        emitter.setScale(4, 1, 4, 1, 500, Phaser.Easing.Linear.None);
-        emitter.gravity = gravity || 250;
-        emitter.start(false, lifespan, frequency, number);
     },
 
     stateBack: function(game) {
-        this.screenGameoverGroup.visible = true;
         this.state.start('MainMenu');
     },
 
@@ -552,11 +527,31 @@ Game.Game.prototype = {
         this.black = this.game.add.sprite(0, 0, 'black');
         this.black.alpha = 0.7;
 
+        this.spark_emitter = this.game.add.emitter(this.game.world.centerX, -32, 640);
+        this.spark_emitter.makeParticles('spark', [0,1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19]);
+        this.spark_emitter.maxParticleScale = 0.6;
+        this.spark_emitter.minParticleScale = 0.2;
+        this.spark_emitter.setYSpeed(20, 100);
+        this.spark_emitter.gravity = 100;
+        this.spark_emitter.width = this.game.world.width * 1.5;
+        this.spark_emitter.minRotation = 0;
+        this.spark_emitter.maxRotation = 40;
+               
+        this.cup = this.game.add.sprite(this.world.width/2, (this.world.height + 400), 'cup');
+        this.cup.anchor.x = 0.5;
+        this.cup.anchor.y = 0.5;
+
         this.collectbutton = this.add.button(this.world.width/2,
-            this.world.height-100, 'claim-prize-btn', this.collect, this, 1, 0, 2);
+        this.world.height-100, 'claim-prize-btn', this.collect, this, 1, 0, 2);
         this.collectbutton.anchor.x = 0.5;
         this.collectbutton.anchor.y = 0.5;
         this.collectbutton.alpha = 0;
+
+        this.congrats = this.game.add.sprite(this.world.width/2, 15, 'congrats');
+        this.congrats.anchor.x = 0.5;
+        this.congrats.scale.x = 0.25;
+        this.congrats.scale.y = 0.25;
+        this.congrats.alpha = 0;
 
         this.couponOne = this.game.add.sprite(-270, 315, 'coupon-one');
         this.couponOne.anchor.x = 0.5;
@@ -570,39 +565,44 @@ Game.Game.prototype = {
         this.couponThree.anchor.x = 0.5;
         this.couponThree.alpha = 0;
 
-        this.spark_emitter = this.game.add.emitter(this.game.world.centerX, -32, 640);
-        this.spark_emitter.makeParticles('spark', [0,1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19]);
-        this.spark_emitter.maxParticleScale = 0.6;
-        this.spark_emitter.minParticleScale = 0.2;
-        this.spark_emitter.setYSpeed(20, 100);
-        this.spark_emitter.gravity = 100;
-        this.spark_emitter.width = this.game.world.width * 1.5;
-        this.spark_emitter.minRotation = 0;
-        this.spark_emitter.maxRotation = 40;
 
         // display game over ui
-        this.game.world.bringToTop(this.screenGameoverGroup);
         this.fadeToBlack = this.game.add.tween(this.black).to({alpha: 0.75}, 1000, "Linear", true);
-        this.screenGameoverGroup.visible = true;
-        this.fadeToBlack.onComplete.add(this.gameoverScoreTween, this);
+        this.fadeToBlack.onComplete.add(this.endFunction, this);
 
     },
 
-    gameoverScoreTween: function() {
+    endFunction: function() {
         this.spark_emitter.start(false, 14000, 20);
-        this.screenGameoverScore.setText('Score: 0');
-        if(score) {
-            this.tweenedPoints = 0;
-            var pointsTween = this.add.tween(this);
-            pointsTween.to({ tweenedPoints: score }, 1000, Phaser.Easing.Linear.None, true, 500);
-            pointsTween.onUpdateCallback(function(){
-                this.screenGameoverScore.setText('Score: '+Math.floor(this.tweenedPoints));
-            }, this);
-            pointsTween.onComplete.addOnce(function(){
-                this.screenGameoverScore.setText('Score: '+ score);
-            }, this);
-            pointsTween.start();
-        }
+        this.raiseCup();
+    },
+
+    raiseCup: function(){
+        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.congratText, this);
+        this.cupUp = this.game.add.tween(this.cup).to( { y: this.world.height/2 - 100 }, 2500, "Linear", true);
+    },
+
+    congratText: function(){
+        this.game.add.tween(this.congrats).to( { alpha:1 }, 500, "Linear", true);
+        this.scalecongratstext = this.game.add.tween(this.congrats.scale).to({ x:1 , y:1 }, 500, "Linear", true);
+        this.scalecongratstext.onComplete.add(this.couponEntrance, this);
+    },
+
+    couponEntrance: function(){
+        this.game.add.tween(this.cup.scale).to( { x:0.35, y:0.35 }, 1250, "Linear", true);
+        this.cupUp = this.game.add.tween(this.cup).to( { y:250 }, 1250, "Linear", true);
+        this.cupUp.onComplete.add(this.couponSlide, this);
+    },
+
+    couponSlide: function(){
+        this.couponOneSlide = this.game.add.tween(this.couponOne).to( { x: this.world.width/2, alpha:1 }, 250, "Linear", true);
+        this.couponTwoSlide = this.game.add.tween(this.couponTwo).to( { x: this.world.width/2, alpha:1 }, 250, "Linear", true, 125);
+        this.couponThreeSlide = this.game.add.tween(this.couponThree).to( { x: this.world.width/2, alpha:1 }, 250, "Linear", true, 250);
+        this.couponThreeSlide.onComplete.add(this.showCollectBtn, this);
+    },
+
+    showCollectBtn: function(){
+        this.game.add.tween(this.collectbutton).to( { alpha:1 }, 250, "Linear", true);
     },
 
     update: function(game) {
