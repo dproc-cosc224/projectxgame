@@ -1,3 +1,24 @@
-body {
+
+
+.teko {
+    font-family: 'Teko', sans-serif;
+    font-weight: 300,
+}
+
+.teko-bold {
+    font-family: 'Teko', sans-serif;
+    font-weight: 700;
+}
+
+
+html, body {
     background-color: #000;
 }
+
+div.modal-content {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -o-box-shadow: none;
+    box-shadow: none;
+}
+
