@@ -48,6 +48,7 @@ var timer;
 var time;
 var timeText;
 var gameOverText;
+var gameOver = false;
 
 var killText;
 
@@ -171,7 +172,7 @@ Game.Game.prototype = {
         player.animations.add('walkDown', [24, 25],10, true);
 
         this.physics.arcade.enable(player);
-        player.body.setSize(gridsize, gridsize, 0, 0);
+        player.body.setSize(gridsize-5, gridsize-5, 0, 0);
 
         // create enemies
         for(var i = 0; i < NUM_ENEMIES; i++) {
@@ -517,12 +518,21 @@ Game.Game.prototype = {
         //stop the timer
         timer.stop();
         music.stop();
+        gameOver = true;
 
         //remove the player
         //player.kill();
         //for(var i = 0; i < NUM_ENEMIES; i++) {
         //    enemy_sprites[i].kill();
         //}
+        
+        player.body.velocity.x = 0;
+        player.body.velocity.y = 0;
+        for(var i = 0; i < NUM_ENEMIES; i++) {
+            enemy_sprites[i].body.velocity.x = 0;
+            enemy_sprites[i].body.velocity.y = 0;
+        }
+        
 
         this.black = this.game.add.sprite(0, 0, 'black');
         this.black.alpha = 0.7;
@@ -567,6 +577,7 @@ Game.Game.prototype = {
 
 
         // display game over ui
+        this.camera.shake(0.01, 500, true, Phaser.Camera.SHAKE_BOTH, true);
         this.fadeToBlack = this.game.add.tween(this.black).to({alpha: 0.75}, 1000, "Linear", true);
         this.fadeToBlack.onComplete.add(this.endFunction, this);
 
@@ -605,7 +616,17 @@ Game.Game.prototype = {
         this.game.add.tween(this.collectbutton).to( { alpha:1 }, 250, "Linear", true);
     },
 
+    collect: function() {
+        $("#player_score").val(score);
+        $("#form1").submit();
+    },
+
     update: function(game) {
+
+        if(gameOver) {
+            return;
+        }
+
 
         //make sure the level collides with the player
         this.physics.arcade.collide(player, layer);

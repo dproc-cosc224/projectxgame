@@ -24,6 +24,14 @@
 </head>
 <body>
 
+
+    <!--[if gte IE 8]>
+    <p style="color:#fff;text-align:center;">Hmmm. Looks like you have not upgraded you browser in a few years. You should upgrade your copy of Internet Explorer so you aren't missing out on all the great content we've made for you.</p>
+    <![endif]-->
+
+    <!--[if lt IE 7]>
+    <p style="color:#fff;text-align:center;">Hmmm. Looks like you have not upgraded you browser in a few years. You should upgrade your copy of Internet Explorer so you aren't missing out on all the great content we've made for you.</p>
+    <![endif]-->
     <!-- Phaser game will start in #gameContainer if it exists -->
     <div id="gameContainer" style="max-width:540px;margin:auto;"></div>
 
@@ -56,6 +64,11 @@
 
     <!-- Starts game after all src files loaded  -->
     <script src = "src/Start.js"></script>
+
+
+    <form action="" method="POST" id="form1">
+        <input type="hidden" name="player_score" id="player_score"/>
+    </form>
 
 </body>
 </html>
