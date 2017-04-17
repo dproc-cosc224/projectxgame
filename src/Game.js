@@ -749,7 +749,7 @@ Game.Game.prototype = {
                 var enemy_sprite = enemy_sprites[j];
 
                 // set directions array and markers for each ghost.
-                // If the ghost tries to move from it's movement function 
+                // If the ghost tries to move from it's movement function
                 // the movement function will check this array to see if it's possible
                 // for it to turn
                 enemy.marker.x = game.math.snapToFloor(Math.floor(enemy_sprite.x), gridsize) / gridsize;
@@ -760,7 +760,7 @@ Game.Game.prototype = {
                 directions[Phaser.RIGHT] = map.getTileRight(index, x, y);
                 directions[Phaser.UP] = map.getTileAbove(index, x, y);
                 directions[Phaser.DOWN] = map.getTileBelow(index, x, y);
-                
+
                 // call enemies movement function
                 enemy.move(this, enemy_sprite, enemy);
             }
@@ -825,11 +825,11 @@ function enemy_movement_function_1(game, sprite, obj) {
         // BFS will give you the shortest path between the ghost and pacman
         var current;
         if(running || obj === enemy_data[0] ){
-            //dfs
-            current = queue.pop();
-        }else{
             //bfs
             current = queue.shift();
+        }else{
+            //dfs
+            current = queue.pop();
         }
 
         // extract current x and y
