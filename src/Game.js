@@ -83,7 +83,6 @@ function GameEntity(startX, startY, speed, threshold, current, turning, marker, 
 
 //creates the player data
 function make_player_data() {
-
     var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     p_data.powered_up = 0;
     return p_data;
@@ -107,94 +106,50 @@ Game.Game.prototype = {
 
     create: function(game) {
 
-        if('level' in queryDict) {
-            level = queryDict['level'];
-        }else{
-            level = 'pacmap';
-        }
+        level = 'pacmap';
 
         game.stage.smoothed = true;
 
         music = game.add.audio('level_music');
         music.play('', 0, 0.5, true);
 
-        if (level === 'dog') {
+        map = this.add.tilemap('pmap32', gridsize, gridsize);
+        map.addTilesetImage('cTile32');
+        layer = map.createLayer(0);
 
-            map = this.add.tilemap('testmap1', gridsize, gridsize);
-            map.addTilesetImage('land');
-            layer = map.createLayer(0);
+        player_startPosX = 18;
+        player_startPosY = 19;
+        enemyStartX = 9;
+        enemyStartY = 11;
 
-            player_startPosX = 14;
-            player_startPosY = 21;
+        enemy_data= [
+            make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function),
+            make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function)
+        ];
 
-            enemyStartX = 7;
-            enemyStartY = 11;
+        player_data = make_player_data();
+        NUM_ENEMIES = enemy_data.length;
+        enemy_sprites = new Array(NUM_ENEMIES);
 
-            enemy_data= [
-                make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
-                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
-            ];
-            player_data = make_player_data();
-            NUM_ENEMIES = enemy_data.length;
-            enemy_sprites = new Array(NUM_ENEMIES);
+        treatIndex = 2;
+        sTreatsIndex = 8;
+        safetile = -1;
 
-            treatIndex = 7;
-            sTreatsIndex = 5;
-            safetile = 7;
+        treats = this.add.physicsGroup();
+        sTreats = this.add.physicsGroup();
 
-            treats = this.add.physicsGroup();
-            sTreats = this.add.physicsGroup();
+        map.createFromTiles(treatIndex, safetile, 'dot32', layer, treats);
+        map.createFromTiles(sTreatsIndex, safetile, 'cSpTile32', layer, sTreats);
 
-            map.createFromTiles(treatIndex, safetile, 'bone', layer, treats);
-            map.createFromTiles(sTreatsIndex, safetile, 'bigBone', layer, sTreats);
+        //add blink animations to bigdots
+        sTreats.callAll('animations.add', 'animations', 'blink', [4, 8], 3, true);
+        sTreats.callAll('animations.play', 'animations', 'blink');
 
-        } else if (level === 'pacmap') {
-
-            map = this.add.tilemap('pmap32', gridsize, gridsize);
-            map.addTilesetImage('cTile32');
-            layer = map.createLayer(0);
-
-            player_startPosX = 18;
-            player_startPosY = 19;
-
-            enemyStartX = 9;
-            enemyStartY = 11;
-
-            enemy_data= [
-
-                make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1),
-                make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function_1)
-
-            ];
-
-            player_data = make_player_data();
-            NUM_ENEMIES = enemy_data.length;
-            enemy_sprites = new Array(NUM_ENEMIES);
-
-            treatIndex = 2;
-            sTreatsIndex = 8;
-            safetile = -1;
-
-            treats = this.add.physicsGroup();
-            sTreats = this.add.physicsGroup();
-
-            map.createFromTiles(treatIndex, safetile, 'dot32', layer, treats);
-            map.createFromTiles(sTreatsIndex, safetile, 'cSpTile32', layer, sTreats);
-
-            //add blink animations to bigdots
-            sTreats.callAll('animations.add', 'animations', 'blink', [4, 8], 3, true);
-            sTreats.callAll('animations.play', 'animations', 'blink');
-
-        }
 
         this.time.events.add(Phaser.Timer.SECOND * 3, function() {
             enemiesMoving = true;
         });
 
-        //treats.setAll('x', 6, false, false, 1);
-        //treats.setAll('y', 6, false, false, 1);
-
-        //sTreats.setAll('y', 9, false, false, 1);
         map.setCollisionByExclusion([safetile], true, layer);
 
         layer.resizeWorld();
@@ -208,52 +163,32 @@ Game.Game.prototype = {
         timeText.visible = true;
 
         //create the player
-        if (level === 'dog') {
-
-            player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'dog', 0);
-            player.anchor.setTo(0.5, 0.5);
-            player.animations.add('walkLeft', [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], 20, true);
-            player.animations.add('walkRight', [6, 7, 8, 9, 10, 11, 10, 9, 8, 7], 20, true);
-            player.animations.add('walkUp', [12, 13, 14, 15, 16, 17, 16, 15, 14, 13], 20, true);
-            player.animations.add('walkDown', [18, 19, 20, 21, 22, 23, 22, 21, 20, 19], 20, true);
-        }else if(level === 'pacmap'){
-
-            player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites32', 38);
-            player.anchor.setTo(0.5, 0.5);
-            player.animations.add('walkLeft', [38, 39], 10, true);
-            player.animations.add('walkRight', [10, 11], 10, true);
-            player.animations.add('walkUp', [52, 53], 10, true);
-            player.animations.add('walkDown', [24, 25],10, true);
-        }
-
+        player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites32', 38);
+        player.anchor.setTo(0.5, 0.5);
+        player.animations.add('walkLeft', [38, 39], 10, true);
+        player.animations.add('walkRight', [10, 11], 10, true);
+        player.animations.add('walkUp', [52, 53], 10, true);
+        player.animations.add('walkDown', [24, 25],10, true);
 
         this.physics.arcade.enable(player);
         player.body.setSize(gridsize, gridsize, 0, 0);
 
         // create enemies
         for(var i = 0; i < NUM_ENEMIES; i++) {
-            var enemy;
-            if (level === 'dog') {
-                enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'vacuum', 0);
-            }else if(level === 'pacmap'){
-                enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
-                enemy.animations.add('walkRight', [0, 1], 10, true);
-                enemy.animations.add('walkDown', [14, 15], 10, true);
-                enemy.animations.add('walkLeft', [28, 29], 10, true);
-                enemy.animations.add('walkUp', [42, 43], 10, true);
-                enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
-                enemy.animations.add('run', [12], 1, true);
-                enemy.animations.add('score', [54], 1, true);
-                enemy.animations.add('dead', [40], 1, true);
-                enemy.play('walkRight');
-            }
+            var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
+            enemy.animations.add('walkRight', [0, 1], 10, true);
+            enemy.animations.add('walkDown', [14, 15], 10, true);
+            enemy.animations.add('walkLeft', [28, 29], 10, true);
+            enemy.animations.add('walkUp', [42, 43], 10, true);
+            enemy.animations.add('runAway', [12, 13, 26, 27], 20, true);
+            enemy.animations.add('run', [12], 1, true);
+            enemy.animations.add('score', [54], 1, true);
+            enemy.animations.add('dead', [40], 1, true);
+            enemy.play('walkRight');
             enemy.anchor.setTo(0.5, 0.5);
             this.physics.arcade.enable(enemy);
             enemy.body.collideWorldBounds = true;
             enemy_sprites[i] = enemy;
-            //this.move(enemy_sprites[i], enemy_data[i]);
-
-
         }
 
         //set the score to zero
@@ -272,7 +207,6 @@ Game.Game.prototype = {
         upButton.events.onInputOut.add(function(){ buttonUpDown = false;});
         upButton.events.onInputDown.add(function(){ buttonUpDown = true; });
         upButton.events.onInputUp.add(function(){ buttonUpDown = false; });
-        //upButton.animations.add('press', [0,1,2,1],20, false);
 
         downButton = this.add.button((8.75 * gridsize), (25.5 * gridsize), 'down',  null, this, 0,1,0,1);
         downButton.scale.setTo(0.6,0.6);
@@ -280,7 +214,6 @@ Game.Game.prototype = {
         downButton.events.onInputOut.add(function(){ buttonDownDown = false;});
         downButton.events.onInputDown.add(function(){ buttonDownDown = true; });
         downButton.events.onInputUp.add(function(){ buttonDownDown = false; });
-        //downButton.animations.add('press', [0,1,2,1],20, false);
 
         rightButton = this.add.button((10.65 * gridsize), (24 * gridsize), 'right',  null, this, 0,1,0,1);
         rightButton.scale.setTo(.6,.6);
@@ -288,7 +221,6 @@ Game.Game.prototype = {
         rightButton.events.onInputOut.add(function(){ buttonRightDown = false;});
         rightButton.events.onInputDown.add(function(){ buttonRightDown = true; });
         rightButton.events.onInputUp.add(function(){ buttonRightDown = false; });
-        //rightButton.animations.add('press', [0,1,2,1],20, false);
 
         leftButton = this.add.button((6.1 * gridsize), (24 * gridsize), 'left',  null, this, 0,1,0,1);
         leftButton.scale.setTo(.6,.6);
@@ -296,7 +228,6 @@ Game.Game.prototype = {
         leftButton.events.onInputOut.add(function(){ buttonLeftDown = false;});
         leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; });
         leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; });
-        //leftButton.animations.add('press', [0,1,2,1],20, false);
 
         var circle = this.add.sprite(( 9.25 * gridsize), (24.60 * gridsize), 'circle', 0);
         circle.scale.setTo(.4,.4);
@@ -454,27 +385,6 @@ Game.Game.prototype = {
 
     },
 
-    // getAngle: function(sprite, obj, to) {
-    //     // use these for sprite rotations -- assumes that sprite starts facing to the right
-    //     var targetAngleTable = {};
-    //     targetAngleTable[Phaser.RIGHT] = 0;
-    //     targetAngleTable[Phaser.DOWN] = 90;
-    //     targetAngleTable[Phaser.LEFT] = 180;
-    //     targetAngleTable[Phaser.UP] = 270;
-    //
-    //     var curAngle = this.math.radToDeg(sprite.rotation);
-    //
-    //     var targetAngle = targetAngleTable[to];
-    //     var targetAngleNeg = targetAngle - 360;
-    //
-    //     var diffTurnRight = this.math.difference(targetAngle, curAngle);
-    //     var diffTurnLeft  = this.math.difference(targetAngleNeg, curAngle);
-    //
-    //     if(diffTurnLeft < diffTurnRight) {
-    //         return targetAngleNeg;
-    //     }
-    //     return targetAngle;
-    // },
 
     checkDirection: function(sprite, obj, turningTo) {
         //3 conditions to check:
@@ -592,11 +502,9 @@ Game.Game.prototype = {
         score += 50;
         scoreText.text = 'Score: ' + score;
 
-        if(level === 'pacmap' ){
-            for(var i =0; i < NUM_ENEMIES; i++) {
-                if(enemy_data[i].alive)
-                    enemy_sprites[i].play('run');
-            }
+        for(var i =0; i < NUM_ENEMIES; i++) {
+            if(enemy_data[i].alive)
+                enemy_sprites[i].play('run');
         }
         for(var j = 0; j < NUM_ENEMIES; j++) {
             if (enemy_data[j].alive) {
@@ -769,7 +677,7 @@ Game.Game.prototype = {
 };
 
 
-function enemy_movement_function_1(game, sprite, obj) {
+function enemy_movement_function(game, sprite, obj) {
 
     // The movement function starts at the target point and searches until it
     // finds the ghosts's position. Set the ghost position.
