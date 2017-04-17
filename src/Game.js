@@ -554,15 +554,15 @@ Game.Game.prototype = {
 
     eatSTreats: function (player, treat){
         //remove the big dot
-		var temp = music.volume;
-		music.volume=0;
-		var sfx = this.add.audio('big_eat_sfx');
-		sfx.volume = temp;
-		sfx.play('',0,0.5,true);
+        var temp = music.volume;
+        music.volume=0;
+        var sfx = this.add.audio('big_eat_sfx');
+        sfx.volume = temp;
+        sfx.play('',0,0.5,true);
         treat.kill();
-		this.time.events.add(Phaser.Timer.SECOND, function(){
-			music.volume = temp;
-		});
+        this.time.events.add(Phaser.Timer.SECOND, function(){
+            music.volume = temp;
+        });
 
 
         // TODO
@@ -594,9 +594,6 @@ Game.Game.prototype = {
         });
 
 
-
-
-
         //update the score
         score += 50;
         scoreText.text = 'Score: ' + score;
@@ -618,6 +615,7 @@ Game.Game.prototype = {
     },
 
     enemyCollision: function (player, enemy){
+
         var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
         if(enemy_obj.running && enemy_obj.alive){
 
@@ -637,9 +635,11 @@ Game.Game.prototype = {
 
 
     gameOver: function(){
+        //TODO Add an animation/sound on enemy collision
+
         //stop the timer
         timer.stop();
-		music.stop();
+        music.stop();
 
         //remove the player
         player.kill();
@@ -765,54 +765,76 @@ function enemy_movement_function_1(game, sprite, obj) {
     }
 
 
+    // path finding variables
     var target = Phaser.NONE;
     var directions = [];
+    var dirs = [Phaser.LEFT, Phaser.RIGHT, Phaser.UP, Phaser.DOWN];
+    var vectors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
+    // use a queue for depth/breadth first searching
     var queue = [];
+    
+    // push initial state into queue then start search 
+    // starting point of search is set to the location of the pacman
+    // unless the ghosts are running, in which case the starting point
+    // is set to be the center of the map
     queue.push([startX, startY]);
     while(queue !== null && queue.length !== 0) {
 
         // Stack vs Queue, pop will give you a DFS, shift will give you a BFS.
+        // DFS will give you more "random" seeming movement
+        // BFS will give you the shortest path between the ghost and pacman
         var current;
         if(running || obj === enemy_data[0] ){
-            //bfs
-            current = queue.shift();
-        }else{
             //dfs
             current = queue.pop();
+        }else{
+            //bfs
+            current = queue.shift();
         }
+
+        // extract current x and y 
         var current_x = current[0];
         var current_y = current[1];
 
+        // check for valid directions and set this tile to be seen
         seen[current_x][current_y] = true;
         directions[Phaser.LEFT] = map.getTileLeft(index, current_x, current_y);
         directions[Phaser.RIGHT] = map.getTileRight(index, current_x, current_y);
         directions[Phaser.UP] = map.getTileAbove(index, current_x, current_y);
         directions[Phaser.DOWN] = map.getTileBelow(index, current_x, current_y);
 
-        // TODO
-        // make sure we don't collide with other ghosts
 
-        var dirs = [Phaser.LEFT, Phaser.RIGHT, Phaser.UP, Phaser.DOWN];
-        var vectors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        var opposites = [Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP];
-
-        // Path-finding magic. Marty is sorry. Marty will fix this
+        // Loop through the tiles in each possible direction
+        // If the target is there then we found our path, try to move the ghost there
+        // else if the tile is valid and hasn't been seen then push it into the queue
         for(var j = 0; j < 4; j++){
+            // looping through directions
+            
             target = dirs[j];
+            // extract the x,y coordinates of current tile
             var x = current_x + vectors[j][0];
             var y = current_y + vectors[j][1];
+
+            // check if the tile is in bounds and is a moveable tile 
             if(directions[target] !== null && directions[target].index === safetile){
+                
+                // check if the tile contains the ghost
                 if(x === enemy_x && y === enemy_y){
                     target = opposites[target];
+                    // check if ghosts is already moving in correct direction 
                     if(obj.current !== target){
                         game.checkDirection(sprite, obj, target);
+                        // check if ghosts can turn to target direction 
                         if(obj.turning !== Phaser.NONE){
                             game.turn(sprite, obj);
                         }
                     }
+                    // path was found, exit the function 
                     return;
                 }
+
+                // push tile into queue if we haven't seen it
                 if(!seen[x][y]){
                     seen[x][y] = true;
                     queue.push([x, y]);
