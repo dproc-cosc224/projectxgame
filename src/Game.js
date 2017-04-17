@@ -734,6 +734,7 @@ Game.Game.prototype = {
         if(player_data.turning !== Phaser.NONE){
             this.turn(player, player_data);
         }
+
         //win condition
         //if(treats.total === 0  && sTreats.total === 0){
             // treats.callAll('revive');
@@ -741,12 +742,26 @@ Game.Game.prototype = {
             //this.gameOver();
         //}
 
-        // for each enemy
-        for(var j = 0; j < NUM_ENEMIES; j++) {
-            var enemy = enemy_data[j];
-            var enemy_sprite = enemy_sprites[j];
+        if(enemiesMoving){
+            // for each enemy
+            for(var j = 0; j < NUM_ENEMIES; j++) {
+                var enemy = enemy_data[j];
+                var enemy_sprite = enemy_sprites[j];
 
-            if(enemiesMoving){
+                // set directions array and markers for each ghost.
+                // If the ghost tries to move from it's movement function 
+                // the movement function will check this array to see if it's possible
+                // for it to turn
+                enemy.marker.x = game.math.snapToFloor(Math.floor(enemy_sprite.x), gridsize) / gridsize;
+                enemy.marker.y = game.math.snapToFloor(Math.floor(enemy_sprite.y), gridsize) / gridsize;
+                x = enemy.marker.x;
+                y = enemy.marker.y;
+                directions[Phaser.LEFT] = map.getTileLeft(index, x, y);
+                directions[Phaser.RIGHT] = map.getTileRight(index, x, y);
+                directions[Phaser.UP] = map.getTileAbove(index, x, y);
+                directions[Phaser.DOWN] = map.getTileBelow(index, x, y);
+                
+                // call enemies movement function
                 enemy.move(this, enemy_sprite, enemy);
             }
         }
@@ -787,6 +802,7 @@ function enemy_movement_function_1(game, sprite, obj) {
         seen[i] = new Array(HEIGHT).fill(false);
     }
 
+    var options = [];
     // path finding variables
     var target = Phaser.NONE;
     // possible directions
@@ -822,10 +838,10 @@ function enemy_movement_function_1(game, sprite, obj) {
 
         // check for valid directions and set this tile to be seen
         seen[current_x][current_y] = true;
-        directions[Phaser.LEFT] = map.getTileLeft(index, current_x, current_y);
-        directions[Phaser.RIGHT] = map.getTileRight(index, current_x, current_y);
-        directions[Phaser.UP] = map.getTileAbove(index, current_x, current_y);
-        directions[Phaser.DOWN] = map.getTileBelow(index, current_x, current_y);
+        options[Phaser.LEFT] = map.getTileLeft(index, current_x, current_y);
+        options[Phaser.RIGHT] = map.getTileRight(index, current_x, current_y);
+        options[Phaser.UP] = map.getTileAbove(index, current_x, current_y);
+        options[Phaser.DOWN] = map.getTileBelow(index, current_x, current_y);
 
 
         // Loop through the tiles in each possible direction
@@ -840,7 +856,7 @@ function enemy_movement_function_1(game, sprite, obj) {
             var y = current_y + vectors[j][1];
 
             // check if the tile is in bounds and is a moveable tile
-            if(directions[target] !== null && directions[target].index === safetile){
+            if(options[target] !== null && options[target].index === safetile){
 
                 // check if the tile contains the ghost
                 if(x === enemy_x && y === enemy_y){
