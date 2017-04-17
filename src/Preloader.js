@@ -70,7 +70,8 @@ Game.Preloader.resources = {
         ['instructions', 'assets/img/instructions.png'],
         ['overlay', 'assets/img/overlay.png'],
         ['ui-bg', 'assets/img/ui-bg.png'],
-        ['particle', 'assets/img/particle.png']
+        ['particle', 'assets/img/particle.png'],
+        ['black', 'assets/img/black.png']
 
     ],
 
