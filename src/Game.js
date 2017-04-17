@@ -47,7 +47,6 @@ var scoreText;
 var timer;
 var time;
 var timeText;
-var gameOverText;
 var gameOver = false;
 
 var killText;
@@ -197,10 +196,6 @@ Game.Game.prototype = {
         scoreText = this.add.text(32 ,32, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         scoreText.visible = true;
 
-        //set the gameOverText and set it to not visible
-        gameOverText = this.add.text((game.width/2)-142, (game.height/2)-50, 'Congratulation! You Scored : ' + score , {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
-        gameOverText.visible = false;
-
 
         upButton = this.add.button((8.75 * gridsize), (22 * gridsize), 'up',  null, this, 0,1,0,1);
         upButton.scale.setTo(0.6, 0.6);
@@ -235,7 +230,6 @@ Game.Game.prototype = {
 
         cursors = this.input.keyboard.createCursorKeys();
 
-        //add the WASD keys to the possible input
         wasd = {
             up : game.input.keyboard.addKey(Phaser.Keyboard.W),
             down: game.input.keyboard.addKey(Phaser.Keyboard.S),
@@ -245,8 +239,6 @@ Game.Game.prototype = {
 
         this.move(player, player_data);
         //game.input.onDown.add(this.beginSwipe, this);
-
-        var fontTitle = { font: "48px Arial", fill: "#000", stroke: "#FFFF00", strokeThickness: 10 };
 
     },
 
@@ -525,7 +517,7 @@ Game.Game.prototype = {
         //for(var i = 0; i < NUM_ENEMIES; i++) {
         //    enemy_sprites[i].kill();
         //}
-        
+
         player.body.velocity.x = 0;
         player.body.velocity.y = 0;
         for(var i = 0; i < NUM_ENEMIES; i++) {
