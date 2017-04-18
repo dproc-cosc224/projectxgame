@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Project X</title>
+    <meta name="description" content="Munchers game. Play to win!">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web--app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="robots" content="noindex">
+
+    <title>Muncher | ProjectX</title>
 
     <!-- Bootstrap css from cdn -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css" integrity="sha256-75xVS8o85bn5eLYm/4w6RBwEaK8lmb206bazL2dD8Fg=" crossorigin="anonymous" />
@@ -13,9 +19,19 @@
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 
 
+    <!-- Set arcade icon. From https://www.iconfinder.com/icons/1435/arcade_games_joystick_package_icon#size=128 -->
+    <link rel="shortcut icon" href="assets/ico/arcade.ico">
 </head>
 <body>
 
+
+    <!--[if gte IE 8]>
+    <p style="color:#fff;text-align:center;">Hmmm. Looks like you have not upgraded you browser in a few years. You should upgrade your copy of Internet Explorer so you aren't missing out on all the great content we've made for you.</p>
+    <![endif]-->
+
+    <!--[if lt IE 7]>
+    <p style="color:#fff;text-align:center;">Hmmm. Looks like you have not upgraded you browser in a few years. You should upgrade your copy of Internet Explorer so you aren't missing out on all the great content we've made for you.</p>
+    <![endif]-->
     <!-- Phaser game will start in #gameContainer if it exists -->
     <div id="gameContainer" style="max-width:540px;margin:auto;"></div>
 
@@ -36,6 +52,9 @@
         });
     </script>
 
+    <!-- Load plugins -->
+    <script src = "src/plugins/storage.js"></script>
+
     <!-- Start loading src files for game -->
     <script src = "src/Boot.js"></script>
     <script src = "src/Preloader.js"></script>
@@ -45,6 +64,11 @@
 
     <!-- Starts game after all src files loaded  -->
     <script src = "src/Start.js"></script>
+
+
+    <form action="" method="POST" id="form1">
+        <input type="hidden" name="player_score" id="player_score"/>
+    </form>
 
 </body>
 </html>
