@@ -516,6 +516,8 @@ Game.Game.prototype = {
         //TODO Add an animation/sound on enemy collision
 
         //stop the timer
+		var lose = this.add.audio('lose');
+		lose.play('',0,0.5,true);
         timer.stop();
         music.stop();
         gameOver = true;
