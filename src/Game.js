@@ -708,11 +708,11 @@ function enemy_movement_function(game, sprite, obj) {
     var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
 
     // this resets the ghosts if they make it home
-    //if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0){
-    //    obj.running = false;
-    //    obj.speed = GHOST_SPEED;
-    //    obj.alive = true;
-    //}
+    if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0 && !obj.alive){
+        obj.running = false;
+        obj.speed = GHOST_SPEED;
+        obj.alive = true;
+    }
 
     var running = obj.running;
 
