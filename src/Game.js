@@ -82,7 +82,7 @@ function GameEntity(startX, startY, speed, threshold, current, turning, marker, 
 
 //creates the player data
 function make_player_data() {
-    var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 10, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
+    var p_data = new GameEntity(player_startPosX, player_startPosY, 150, 20, Phaser.RIGHT, Phaser.NONE, new Phaser.Point(), new Phaser.Point());
     p_data.powered_up = 0;
     return p_data;
 }
