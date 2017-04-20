@@ -157,7 +157,7 @@ Game.Game.prototype = {
         timer = this.time.create(false);
         timer.loop(1000, this.updateCounter, this);
         timer.start();
-        time = 1000;
+        time = 20;
         timeText = this.add.text(400, 32, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         timeText.visible = true;
 
