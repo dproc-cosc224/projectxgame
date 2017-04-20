@@ -426,12 +426,12 @@ Game.Game.prototype = {
     eatSTreats: function (player, treat){
         //remove the big dot
         var temp = music.volume;
-        music.volume=0;
+        music.volume=temp/2
         var sfx = this.add.audio('big_eat_sfx');
         sfx.volume = temp;
         sfx.play('',0,0.5,true);
         treat.kill();
-        this.time.events.add(Phaser.Timer.SECOND, function(){
+        this.time.events.add(Phaser.Timer.SECOND/2, function(){
             music.volume = temp;
         });
 
@@ -487,6 +487,14 @@ Game.Game.prototype = {
 
         var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
         if(enemy_obj.running && enemy_obj.alive){
+			var temp = music.volume;
+			music.volume=temp/2
+			var sfx = this.add.audio('ghost_eat_sfx');
+			sfx.volume = temp;
+			sfx.play('',0,0.5,true);
+			this.time.events.add(Phaser.Timer.SECOND/2, function(){
+				music.volume = temp;
+			});
 
             enemy_obj.alive = false;
             enemy.play('dead');
