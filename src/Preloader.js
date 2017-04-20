@@ -39,25 +39,9 @@ Game.Preloader.resources = {
      * Load all game resources
      */
     'image' : [
-        //['tiles', 'assets/img/tile2.png'],
-        //['ptiles', 'assets/img/TileCraftGroundSet.png'],
-        //['pacman', 'assets/img/pac.png'],
-        //['dot', 'assets/img/dot.png'],
-        //['bigDot', 'assets/img/bigDot.png'],
-        //['dot48', 'assets/img/dot48.png'],
-        //['bigDot48', 'assets/img/bigDot48.png'],
         ['dot32', 'assets/img/dot32.png'],
         ['bigDot32', 'assets/img/bigDot32.png'],
         ['cherry', 'assets/img/cherry.png'],
-        //['femur', 'assets/img/femur.png'],
-        //['ham', 'assets/img/ham.png'],
-        //['ghost', 'assets/img/ghost4.png'],
-        //['vacuum', 'assets/img/vacuum.png'],
-        //['land', 'assets/img/land.png'],
-        //['bone', 'assets/img/bone.png'],
-        //['bigBone', 'assets/img/bigBone.png'],
-        //['cTile', 'assets/img/chompermazetiles.png'],
-        //['cTile48', 'assets/img/chompermazetiles48.png'],
         ['cTile32', 'assets/img/chompermazetiles32g.png'],
         ['down', 'assets/img/down.png'],
         ['left', 'assets/img/left.png'],
@@ -92,11 +76,6 @@ Game.Preloader.resources = {
     ],
 
     'tilemap': [
-        //['map', 'assets/maps/map.csv'],
-        //['pupmap', 'assets/maps/pupmap.csv'],
-        //['testmap1', 'assets/maps/testmap1.csv'],
-        //['pmap48', 'assets/maps/pmap48.csv'],
-        //['pmap', 'assets/maps/pmap.csv'],
         ['pmap32', 'assets/maps/pmap32.csv']
 
 
@@ -104,12 +83,12 @@ Game.Preloader.resources = {
     ],
 
     'spritesheet': [
-        //['pup', 'assets/img/pup.png', 32, 32],
-        //['dog', 'assets/img/dog.png', 64, 64],
-        //['csprites','assets/img/chompersprites.png', 64, 64],
-        //['csprites48','assets/img/chompersprites48.png', 48, 48],
         ['csprites32','assets/img/chompersprites32.png', 32, 32],
         ['cSpTile32', 'assets/img/chompermazetiles32g.png', 32, 32],
+        ['downs', 'assets/img/downs.png', 143,182],
+        ['lefts', 'assets/img/lefts.png', 182, 143],
+        ['rights', 'assets/img/rights.png', 182, 143],
+        ['ups', 'assets/img/ups.png', 143,182],
         ['button-start', 'assets/img/button-start.png', 180, 180],
         ['button-rules', 'assets/img/rules-btn.png', 110, 40],
         ['button-play', 'assets/img/play-btn.png', 475, 140],
