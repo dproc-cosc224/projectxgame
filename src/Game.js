@@ -227,6 +227,24 @@ Game.Game.prototype = {
         var circle = this.add.sprite(( 9.25 * gridsize), (24.60 * gridsize), 'circle', 0);
         circle.scale.setTo(0.4, 0.4);
 
+        var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+        if (mobile) {
+            alert("MOBILE DEVICE!!");
+
+        }
+        else
+        {
+            alert("NOT A MOBILE DEVICE!!");
+            upButton.enabled = false;
+            upButton.visible = false;
+            downButton.enabled = false;
+            downButton.visible = false;
+            leftButton.enabled = false;
+            leftButton.visible = false;
+            rightButton.enabled = false;
+            rightButton.visible = false;
+            circle.visible = false;
+        }
         cursors = this.input.keyboard.createCursorKeys();
 
         // wasd = {
