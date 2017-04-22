@@ -441,7 +441,7 @@ Game.Game.prototype = {
         player_data.powered_up++;
 
         this.time.events.add(Phaser.Timer.SECOND * 3, function() {
-           if(player_data.powered_up == 1) {
+           if(player_data.powered_up === 1) {
                for(var i = 0; i < NUM_ENEMIES; i++){
                    if(enemy_data[i].running && enemy_data[i].alive) {
                        enemy_sprites[i].play('runAway');
@@ -470,8 +470,9 @@ Game.Game.prototype = {
         scoreText.text = 'Score: ' + score;
 
         for(var i =0; i < NUM_ENEMIES; i++) {
-            if(enemy_data[i].alive)
+            if(enemy_data[i].alive) {
                 enemy_sprites[i].play('run');
+            }
         }
         for(var j = 0; j < NUM_ENEMIES; j++) {
             if (enemy_data[j].alive) {
@@ -515,6 +516,8 @@ Game.Game.prototype = {
         //TODO Add an animation/sound on enemy collision
 
         //stop the timer
+		var lose = this.add.audio('lose');
+		lose.play('',0,0.5,true);
         timer.stop();
         music.stop();
         gameOver = true;
@@ -704,8 +707,8 @@ function enemy_movement_function(game, sprite, obj) {
     var enemy_x = Phaser.Math.snapToFloor(Math.floor(sprite.x), gridsize) / gridsize;
     var enemy_y = Phaser.Math.snapToFloor(Math.floor(sprite.y), gridsize) / gridsize;
 
-
-    if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0){
+    // this resets the ghosts if they make it home
+    if(Math.abs(enemy_x-ghostDenX) <= 0 && Math.abs(enemy_y-ghostDenY) <= 0 && !obj.alive){
         obj.running = false;
         obj.speed = GHOST_SPEED;
         obj.alive = true;
@@ -724,7 +727,7 @@ function enemy_movement_function(game, sprite, obj) {
     // index is the index of our tilemap layer
     var index = layer.index;
 
-    // seen array will track the tiles we have already looked at
+    // seen array will track the tiles we have already looked at during our search
     var seen = new Array(WIDTH);
     for(var i = 0; i < WIDTH; i++) {
         seen[i] = new Array(HEIGHT).fill(false);
@@ -738,7 +741,7 @@ function enemy_movement_function(game, sprite, obj) {
     // corresponding x,y vectors for each direction
     var vectors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
-    // use a queue for searching
+    // use a queue and/or stack for searching
     var queue = [];
 
     // push initial state into queue then start search
