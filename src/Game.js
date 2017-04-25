@@ -25,7 +25,7 @@ var cursors;
 var music;
 var player_startPosX;
 var player_startPosY;
-//var wasd;
+
 var gridsize = 32;
 var directions = [null, null, null, null];
 var opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
@@ -40,8 +40,7 @@ var downButton;
 var leftButton;
 var rightButton;
 
-var endX;
-var endY;
+
 var score;
 var scoreText;
 var scoreX;
@@ -141,7 +140,6 @@ Game.Game.prototype = {
             scoreY = 128;
         }
 
-        //map = this.add.tilemap('pmap32', gridsize, gridsize);
         map.addTilesetImage('cTile32');
         layer = map.createLayer(0);
 
@@ -258,14 +256,10 @@ Game.Game.prototype = {
 
 
 
-        if (mobile) {
-            //alert("MOBILE DEVICE!!");
 
-        }
-        else
+        if(!mobile)
         {
             //disable buttons on desktop
-            //alert("NOT A MOBILE DEVICE!!");
             upButton.enabled = false;
             upButton.visible = false;
             downButton.enabled = false;
@@ -281,15 +275,8 @@ Game.Game.prototype = {
         }
         cursors = this.input.keyboard.createCursorKeys();
 
-        // wasd = {
-        //     up : game.input.keyboard.addKey(Phaser.Keyboard.W),
-        //     down: game.input.keyboard.addKey(Phaser.Keyboard.S),
-        //     right: game.input.keyboard.addKey(Phaser.Keyboard.D),
-        //     left: game.input.keyboard.addKey(Phaser.Keyboard.A)
-        // };
 
         this.move(player, player_data);
-        //game.input.onDown.add(this.beginSwipe, this);
 
     },
 
@@ -309,6 +296,7 @@ Game.Game.prototype = {
         }
     },
 
+    //swiping function if ever needed
 /*    beginSwipe : function(){
       player_startPosX = this.game.input.worldX;
       player_startPosY = this.game.input.worldY;
@@ -346,7 +334,6 @@ Game.Game.prototype = {
 
         //if the left key is pressed and the player not currently facing left
         if((cursors.left.isDown || buttonLeftDown )  && player_data.current !== Phaser.LEFT){
-
 
             this.checkDirection(player, player_data, Phaser.LEFT);
 
@@ -586,11 +573,6 @@ Game.Game.prototype = {
         music.stop();
         gameOver = true;
 
-        //remove the player
-        //player.kill();
-        //for(var i = 0; i < NUM_ENEMIES; i++) {
-        //    enemy_sprites[i].kill();
-        //}
 
         player.body.velocity.x = 0;
         player.body.velocity.y = 0;
