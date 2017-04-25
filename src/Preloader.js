@@ -78,9 +78,8 @@ Game.Preloader.resources = {
     ],
 
     'tilemap': [
-        ['pmap32', 'assets/maps/pmap32.csv']
-
-
+        ['pmap32', 'assets/maps/pmap32.csv'],
+        ['pmapdesk', 'assets/maps/pmapdesk.csv']
 
     ],
 
@@ -91,6 +90,7 @@ Game.Preloader.resources = {
         ['lefts', 'assets/img/lefts.png', 182, 143],
         ['rights', 'assets/img/rights.png', 182, 143],
         ['ups', 'assets/img/ups.png', 143,182],
+        ['movDir', 'assets/img/moveDirs.png', 256,256],
         ['button-start', 'assets/img/button-start.png', 180, 180],
         ['button-rules', 'assets/img/rules-btn.png', 110, 40],
         ['button-play', 'assets/img/play-btn.png', 475, 140],
