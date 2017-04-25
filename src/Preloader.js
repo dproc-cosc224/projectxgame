@@ -41,7 +41,6 @@ Game.Preloader.resources = {
     'image' : [
         ['dot32', 'assets/img/dot32.png'],
         ['bigDot32', 'assets/img/bigDot32.png'],
-        ['cherry', 'assets/img/cherry.png'],
         ['cTile32', 'assets/img/purpleTileset.png'],
         ['down', 'assets/img/down.png'],
         ['left', 'assets/img/left.png'],
@@ -90,7 +89,6 @@ Game.Preloader.resources = {
         ['lefts', 'assets/img/lefts.png', 182, 143],
         ['rights', 'assets/img/rights.png', 182, 143],
         ['ups', 'assets/img/ups.png', 143,182],
-        ['movDir', 'assets/img/moveDirs.png', 256,256],
         ['button-start', 'assets/img/button-start.png', 180, 180],
         ['button-rules', 'assets/img/rules-btn.png', 110, 40],
         ['button-play', 'assets/img/play-btn.png', 475, 140],
