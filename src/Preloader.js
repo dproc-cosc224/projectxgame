@@ -41,7 +41,7 @@ Game.Preloader.resources = {
     'image' : [
         ['dot32', 'assets/img/dot32.png'],
         ['bigDot32', 'assets/img/bigDot32.png'],
-        ['cTile32', 'assets/img/purpleTileset.png'],
+        ['cTile32', 'assets/img/chompermazetiles32g.png'],
         ['down', 'assets/img/down.png'],
         ['left', 'assets/img/left.png'],
         ['right', 'assets/img/right.png'],
