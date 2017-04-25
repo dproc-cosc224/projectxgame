@@ -73,7 +73,8 @@ Game.Preloader.resources = {
         ['menu_music', ['assets/audio/menuLoop.mp3', 'assets/audio/menuLoop.ogg']],
         ['big_eat_sfx', ['assets/audio/bigEat.mp3', 'assets/audio/bigEat.ogg']],
 		['ghost_eat_sfx', ['assets/audio/ghostEat.mp3','assets/audio/ghostEat.ogg']],
-		['lose', ['assets/audio/lose.mp3', 'assets/audio/lose.ogg']]
+		['lose', ['assets/audio/lose.mp3', 'assets/audio/lose.ogg']],
+		['win', ['assets/audio/win.mp3', 'assets/audio/win.ogg']]
     ],
 
     'tilemap': [
