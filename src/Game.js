@@ -44,9 +44,13 @@ var endX;
 var endY;
 var score;
 var scoreText;
+var scoreX;
+var scoreY;
 var timer;
 var time;
 var timeText;
+var timeX;
+var timeY;
 var gameOver = false;
 
 
@@ -112,14 +116,36 @@ Game.Game.prototype = {
         music = game.add.audio('level_music');
         music.play('', 0, 0.5, true);
 
-        map = this.add.tilemap('pmap32', gridsize, gridsize);
+        var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+
+        if (mobile) {
+            map = this.add.tilemap('pmap32', gridsize, gridsize);
+            player_startPosX = 18;
+            player_startPosY = 19;
+            enemyStartX = 9;
+            enemyStartY = 11;
+            timeX = 400;
+            timeY = 32;
+            scoreX = 32;
+            scoreY = 32;
+
+        }else{
+            map = this.add.tilemap('pmapdesk', gridsize, gridsize);
+            player_startPosX = 18;
+            player_startPosY = 22;
+            enemyStartX = 9;
+            enemyStartY = 14;
+            timeX = 400;
+            timeY = 128;
+            scoreX = 32;
+            scoreY = 128;
+        }
+
+        //map = this.add.tilemap('pmap32', gridsize, gridsize);
         map.addTilesetImage('cTile32');
         layer = map.createLayer(0);
 
-        player_startPosX = 18;
-        player_startPosY = 19;
-        enemyStartX = 9;
-        enemyStartY = 11;
+
 
         enemy_data= [
             make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function),
@@ -158,7 +184,7 @@ Game.Game.prototype = {
         timer.loop(1000, this.updateCounter, this);
         timer.start();
         time = 20;
-        timeText = this.add.text(400, 32, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
+        timeText = this.add.text(timeX, timeY, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         timeText.visible = true;
 
         //create the player
@@ -192,7 +218,7 @@ Game.Game.prototype = {
 
         //set the score to zero
         score = 0;
-        scoreText = this.add.text(32 ,32, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
+        scoreText = this.add.text(scoreX ,scoreY, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         scoreText.visible = true;
 
 
@@ -227,14 +253,19 @@ Game.Game.prototype = {
         var circle = this.add.sprite(( 9.25 * gridsize), (24.60 * gridsize), 'circle', 0);
         circle.scale.setTo(0.4, 0.4);
 
-        var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+
+
+
+
+
         if (mobile) {
-            alert("MOBILE DEVICE!!");
+            //alert("MOBILE DEVICE!!");
 
         }
         else
         {
-            alert("NOT A MOBILE DEVICE!!");
+            //disable buttons on desktop
+            //alert("NOT A MOBILE DEVICE!!");
             upButton.enabled = false;
             upButton.visible = false;
             downButton.enabled = false;
@@ -244,6 +275,9 @@ Game.Game.prototype = {
             rightButton.enabled = false;
             rightButton.visible = false;
             circle.visible = false;
+
+
+
         }
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -313,19 +347,26 @@ Game.Game.prototype = {
         //if the left key is pressed and the player not currently facing left
         if((cursors.left.isDown || buttonLeftDown )  && player_data.current !== Phaser.LEFT){
 
+
             this.checkDirection(player, player_data, Phaser.LEFT);
 
         }else if((cursors.right.isDown || buttonRightDown )  && player_data.current !== Phaser.RIGHT){
+
 
             this.checkDirection(player, player_data, Phaser.RIGHT );
 
         }else if((cursors.up.isDown || buttonUpDown )  && player_data.current !== Phaser.UP){
 
+
             this.checkDirection(player, player_data, Phaser.UP);
 
         }else if((cursors.down.isDown  || buttonDownDown )  && player_data.current !== Phaser.DOWN){
 
+
             this.checkDirection(player, player_data, Phaser.DOWN);
+        }else{
+
+
         }
     },
 
@@ -353,15 +394,20 @@ Game.Game.prototype = {
         if(((enemy_data.indexOf(obj) > -1) && (!obj.running)) || obj === player_data) {
             if(obj.turning === Phaser.RIGHT){
                 sprite.play('walkRight');
+
             }
             else if(obj.turning === Phaser.LEFT){
                 sprite.play('walkLeft');
+
             }
             else if(obj.turning === Phaser.UP){
                 sprite.play('walkUp');
+
             }
             else if (obj.turning === Phaser.DOWN) {
                 sprite.play('walkDown');
+
+
             }
         }
 
