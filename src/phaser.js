@@ -7213,8 +7213,8 @@ vec2.create = function() {
 /**
  * Creates a new vec2 initialized with values from an existing vector
  * @static
- * @method clone
- * @param {Array} a vector to clone
+ * @method arr
+ * @param {Array} a vector to arr
  * @return {Array} a new 2D vector
  */
 vec2.clone = function(a) {
@@ -23756,7 +23756,7 @@ Phaser.Utils = {
                             clone = src && Phaser.Utils.isPlainObject(src) ? src : {};
                         }
 
-                        // Never move original objects, clone them
+                        // Never move original objects, arr them
                         target[name] = Phaser.Utils.extend(deep, clone, copy);
 
                     // Don't bring in undefined values
@@ -23778,7 +23778,7 @@ Phaser.Utils = {
     * Mixes in an existing mixin object with the target.
     *
     * Values in the mixin that have either `get` or `set` functions are created as properties via `defineProperty`
-    * _except_ if they also define a `clone` method - if a clone method is defined that is called instead and
+    * _except_ if they also define a `arr` method - if a arr method is defined that is called instead and
     * the result is assigned directly.
     *
     * @method Phaser.Utils.mixinPrototype
@@ -24049,7 +24049,7 @@ Phaser.Circle.prototype = {
 
     /**
     * Returns a new Circle object with the same values for the x, y, width, and height properties as this Circle object.
-    * @method Phaser.Circle#clone
+    * @method Phaser.Circle#arr
     * @param {Phaser.Circle} output - Optional Circle object. If given the values will be set into the object, otherwise a brand new Circle object will be created and returned.
     * @return {Phaser.Circle} The cloned Circle object.
     */
@@ -24573,7 +24573,7 @@ Phaser.Ellipse.prototype = {
 
     /**
     * Returns a new Ellipse object with the same values for the x, y, width, and height properties as this Ellipse object.
-    * @method Phaser.Ellipse#clone
+    * @method Phaser.Ellipse#arr
     * @param {Phaser.Ellipse} output - Optional Ellipse object. If given the values will be set into the object, otherwise a brand new Ellipse object will be created and returned.
     * @return {Phaser.Ellipse} The cloned Ellipse object.
     */
@@ -25119,7 +25119,7 @@ Phaser.Line.prototype = {
 
     /**
      * Returns a new Line object with the same values for the start and end properties as this Line object.
-     * @method Phaser.Line#clone
+     * @method Phaser.Line#arr
      * @param {Phaser.Line} output - Optional Line object. If given the values will be set into the object, otherwise a brand new Line object will be created and returned.
      * @return {Phaser.Line} The cloned Line object.
      */
@@ -25650,9 +25650,9 @@ Phaser.Matrix.prototype = {
      * If you provide the output parameter the values of this Matrix will be copied over to it.
      * If the output parameter is blank a new Matrix object will be created.
      *
-     * @method Phaser.Matrix#clone
+     * @method Phaser.Matrix#arr
      * @param {Phaser.Matrix} [output] - If provided the values of this Matrix will be copied to it, otherwise a new Matrix object is created.
-     * @return {Phaser.Matrix} A clone of this Matrix.
+     * @return {Phaser.Matrix} A arr of this Matrix.
      */
     clone: function (output) {
 
@@ -26126,7 +26126,7 @@ Phaser.Point.prototype = {
     /**
     * Creates a copy of the given Point.
     *
-    * @method Phaser.Point#clone
+    * @method Phaser.Point#arr
     * @param {Phaser.Point} [output] Optional Point object. If given the values will be set into this object, otherwise a brand new Point object will be created and returned.
     * @return {Phaser.Point} The new Point object.
     */
@@ -26925,9 +26925,9 @@ Phaser.Polygon.prototype = {
 
     /**
      * Creates a copy of the given Polygon.
-     * This is a deep clone, the resulting copy contains new Phaser.Point objects
+     * This is a deep arr, the resulting copy contains new Phaser.Point objects
      *
-     * @method Phaser.Polygon#clone
+     * @method Phaser.Polygon#arr
      * @param {Phaser.Polygon} [output=(new Polygon)] - The polygon to update. If not specified a new polygon will be created.
      * @return {Phaser.Polygon} The cloned (`output`) polygon object.
      */
@@ -27402,7 +27402,7 @@ Phaser.Rectangle.prototype = {
 
     /**
     * Returns a new Rectangle object with the same values for the x, y, width, and height properties as the original Rectangle object.
-    * @method Phaser.Rectangle#clone
+    * @method Phaser.Rectangle#arr
     * @param {Phaser.Rectangle} [output] - Optional Rectangle object. If given the values will be set into the object, otherwise a brand new Rectangle object will be created and returned.
     * @return {Phaser.Rectangle}
     */
@@ -27958,7 +27958,7 @@ Phaser.Rectangle.size = function (a, output) {
 
 /**
 * Returns a new Rectangle object with the same values for the x, y, width, and height properties as the original Rectangle object.
-* @method Phaser.Rectangle.clone
+* @method Phaser.Rectangle.arr
 * @param {Phaser.Rectangle} a - The Rectangle object.
 * @param {Phaser.Rectangle} [output] - Optional Rectangle object. If given the values will be set into the object, otherwise a brand new Rectangle object will be created and returned.
 * @return {Phaser.Rectangle}
@@ -28267,7 +28267,7 @@ Phaser.RoundedRectangle.prototype = {
     * Returns a new RoundedRectangle object with the same values for the x, y, width, height and
     * radius properties as this RoundedRectangle object.
     * 
-    * @method Phaser.RoundedRectangle#clone
+    * @method Phaser.RoundedRectangle#arr
     * @return {Phaser.RoundedRectangle}
     */
     clone: function () {
@@ -30702,7 +30702,7 @@ Phaser.Signal.prototype = {
             return;
         }
 
-        bindings = this._bindings.slice(); //clone array in case add/remove items during dispatch
+        bindings = this._bindings.slice(); //arr array in case add/remove items during dispatch
         this._shouldPropagate = true; //in case `halt` was called before dispatch or during the previous dispatch.
 
         //execute all callbacks until end of the list or until a callback returns `false` or stops propagation
@@ -55057,7 +55057,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     // if the first point is the last point - gonna have issues :)
     if(firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
     {
-        // need to clone as we are going to slightly modify the shape..
+        // need to arr as we are going to slightly modify the shape..
         points = points.slice();
 
         points.pop();
@@ -69666,7 +69666,7 @@ Phaser.Frame.prototype = {
      * Clones this Frame into a new Phaser.Frame object and returns it.
      * Note that all properties are cloned, including the name, index and UUID.
      *
-     * @method Phaser.Frame#clone
+     * @method Phaser.Frame#arr
      * @return {Phaser.Frame} An exact copy of this Frame object.
      */
     clone: function () {
@@ -69820,8 +69820,8 @@ Phaser.FrameData.prototype = {
     /**
      * Makes a copy of this FrameData including copies (not references) to all of the Frames it contains.
      *
-     * @method Phaser.FrameData#clone
-     * @return {Phaser.FrameData} A clone of this object, including clones of the Frame objects it contains.
+     * @method Phaser.FrameData#arr
+     * @return {Phaser.FrameData} A arr of this object, including clones of the Frame objects it contains.
      */
     clone: function () {
 
@@ -71642,12 +71642,12 @@ Phaser.Cache.prototype = {
     *
     * Note: If the object cannot be found a `console.warn` message is displayed.
     *
-    * You can either return the object by reference (the default), or return a clone
-    * of it by setting the `clone` argument to `true`.
+    * You can either return the object by reference (the default), or return a arr
+    * of it by setting the `arr` argument to `true`.
     *
     * @method Phaser.Cache#getJSON
     * @param {string} key - The key of the asset to retrieve from the cache.
-    * @param {boolean} [clone=false] - Return a clone of the original object (true) or a reference to it? (false)
+    * @param {boolean} [clone=false] - Return a arr of the original object (true) or a reference to it? (false)
     * @return {object} The JSON object, or an Array if the key points to an Array property. If the property wasn't found, it returns null.
     */
     getJSON: function (key, clone) {
