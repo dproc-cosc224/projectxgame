@@ -1,0 +1,20 @@
+output: game loads
+input: player clicks or taps the play button
+output: menu screen and game instructions are displayed
+input: player clicks the button for contest rules or the button to begin
+	   playing the game
+if player clicks for contest rules:
+	output: new browser tab is opened to a website containing the contest rules
+	game pauses and waits for player to navigate back to game and click to start
+output: game begins
+
+while the game timer is above 0:
+	input: player presses arrow keys to direct their sprite to play the game
+	output: non-player sprites respond to player actions
+	output: game displays player score
+	output: game timer counts down from 20 seconds
+output: player is shown the "game over" screen
+output: prizes that player has won are displayed; game waits for player to
+	    select a prize
+input: player clicks or taps to accept a prize
+output: game restarts
