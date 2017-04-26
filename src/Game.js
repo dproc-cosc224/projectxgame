@@ -7,25 +7,30 @@
 
 Game.Game = function(game) { };
 
-var HEIGHT = 30;
-var WIDTH = 20;
 
+
+//ghosts
 var ghostDenX = 9;
 var ghostDenY = 11;
-
 var GHOST_SPEED = 80;
 var GHOST_RUNNING_AWAY_SPEED = 60;
 var DEAD_GHOST_SPEED = 200;
 var GHOST_TURN_THRESHOLD = 7;
+var enemyStartX;
+var enemyStartY;
+var enemy_data;
+var NUM_ENEMIES;
+var enemy_sprites;
+var enemiesMoving = false;
 
+//level
+var HEIGHT = 30;
+var WIDTH = 20;
 var map;
 var layer;
 var tiles;
 var cursors;
 var music;
-var player_startPosX;
-var player_startPosY;
-//var wasd;
 var gridsize = 32;
 var directions = [null, null, null, null];
 var opposites = [ Phaser.NONE, Phaser.RIGHT, Phaser.LEFT, Phaser.DOWN, Phaser.UP ];
@@ -34,39 +39,35 @@ var sTreats;
 var treatIndex;
 var sTreatsIndex;
 var safetile;
+var score;
+var scoreText;
+var scoreX;
+var scoreY;
+var timer;
+var time;
+var timeText;
+var timeX;
+var timeY;
+var gameOver = false;
 
+//moblie touchscreen
 var upButton;
 var downButton;
 var leftButton;
 var rightButton;
-
-var endX;
-var endY;
-var score;
-var scoreText;
-var timer;
-var time;
-var timeText;
-var gameOver = false;
-
-
-var player;
-var player_data;
-var level;
-var enemyStartX;
-var enemyStartY;
-
-var enemy_data;
-var NUM_ENEMIES;
-var enemy_sprites;
-
 var buttonLeftDown;
 var buttonRightDown;
 var buttonUpDown;
 var buttonDownDown;
-var enemiesMoving = false;
 
-var moveDirection;
+//player
+var player_startPosX;
+var player_startPosY;
+var player;
+var player_data;
+var level;
+
+
 
 // game entity object used for players and enemies
 function GameEntity(startX, startY, speed, threshold, current, turning, marker, turnPoint) {
@@ -112,31 +113,59 @@ Game.Game.prototype = {
         music = game.add.audio('level_music');
         music.play('', 0, 0.5, true);
 
-        map = this.add.tilemap('pmap32', gridsize, gridsize);
+        var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+
+        if (mobile) {
+            //if the game is being played on mobile load mobile tilemap and mobile settings
+            map = this.add.tilemap('pmap32', gridsize, gridsize);
+            player_startPosX = 18;
+            player_startPosY = 19;
+            enemyStartX = 9;
+            enemyStartY = 11;
+            timeX = 400;
+            timeY = 32;
+            scoreX = 32;
+            scoreY = 32;
+            ghostDenY = 11;
+
+        }else{
+            //if the game is on desktop/other load the desktop settings
+            map = this.add.tilemap('pmapdesk', gridsize, gridsize);
+            player_startPosX = 18;
+            player_startPosY = 22;
+            enemyStartX = 9;
+            enemyStartY = 14;
+            timeX = 400;
+            timeY = 128;
+            scoreX = 32;
+            scoreY = 128;
+            ghostDenY= 14;
+        }
+
         map.addTilesetImage('cTile32');
         layer = map.createLayer(0);
 
-        player_startPosX = 18;
-        player_startPosY = 19;
-        enemyStartX = 9;
-        enemyStartY = 11;
-
+        //generate the enemies
         enemy_data= [
             make_enemy_data(enemyStartX * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function),
             make_enemy_data((enemyStartX+1) * gridsize + gridsize/2, enemyStartY * gridsize + gridsize/2, enemy_movement_function)
         ];
 
+        //generate the player
         player_data = make_player_data();
         NUM_ENEMIES = enemy_data.length;
         enemy_sprites = new Array(NUM_ENEMIES);
 
+        //set the indexes of tiles
         treatIndex = 2;
         sTreatsIndex = 8;
         safetile = -1;
 
+        //add physics to the collectables
         treats = this.add.physicsGroup();
         sTreats = this.add.physicsGroup();
 
+        //create the collectables from the specified tiles
         map.createFromTiles(treatIndex, safetile, 'dot32', layer, treats);
         map.createFromTiles(sTreatsIndex, safetile, 'cSpTile32', layer, sTreats);
 
@@ -149,6 +178,7 @@ Game.Game.prototype = {
             enemiesMoving = true;
         });
 
+        //set collision to all tiles execpt the specified tiles
         map.setCollisionByExclusion([safetile], true, layer);
 
         layer.resizeWorld();
@@ -158,21 +188,20 @@ Game.Game.prototype = {
         timer.loop(1000, this.updateCounter, this);
         timer.start();
         time = 20;
-        timeText = this.add.text(400, 32, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
+        timeText = this.add.text(timeX, timeY, 'Time Left : ' + time, {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         timeText.visible = true;
 
-        //create the player
+        //add the player to the map and specify the animations
         player = this.add.sprite((player_startPosX * gridsize) + (gridsize / 2), (player_startPosY * gridsize) + (gridsize / 2), 'csprites32', 38);
         player.anchor.setTo(0.5, 0.5);
         player.animations.add('walkLeft', [38, 39], 10, true);
         player.animations.add('walkRight', [10, 11], 10, true);
         player.animations.add('walkUp', [52, 53], 10, true);
         player.animations.add('walkDown', [24, 25],10, true);
-
         this.physics.arcade.enable(player);
         player.body.setSize(gridsize-5, gridsize-5, 0, 0);
 
-        // create enemies
+        //add the enemies to the map and specify the animations
         for(var i = 0; i < NUM_ENEMIES; i++) {
             var enemy = game.add.sprite(enemy_data[i].startX, enemy_data[i].startY, 'csprites32', 0);
             enemy.animations.add('walkRight', [0, 1], 10, true);
@@ -192,31 +221,33 @@ Game.Game.prototype = {
 
         //set the score to zero
         score = 0;
-        scoreText = this.add.text(32 ,32, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
+        scoreText = this.add.text(scoreX ,scoreY, 'score : 0', {font: 'Press Start 2P', fontSize: '16px', fill: '#ffffff'});
         scoreText.visible = true;
 
 
+        //add the touchscreen buttons for mobile, set their size and effects
+        //Up Arrow
         upButton = this.add.button((8.75 * gridsize), (22 * gridsize), 'ups',  null, this, 1,0,1,0);
         upButton.scale.setTo(0.6, 0.6);
         upButton.events.onInputOver.add(function(){ buttonUpDown = true; upButton.scale.setTo(0.61, 0.61);});
         upButton.events.onInputOut.add(function(){ buttonUpDown = false; upButton.scale.setTo(0.6, 0.6);});
         upButton.events.onInputDown.add(function(){ buttonUpDown = true; upButton.scale.setTo(0.61, 0.61);});
         upButton.events.onInputUp.add(function(){ buttonUpDown = false; upButton.scale.setTo(0.6, 0.6);});
-
+        //Down Arrow
         downButton = this.add.button((8.75 * gridsize), (25.5 * gridsize), 'downs',  null, this, 1,0,1,0);
         downButton.scale.setTo(0.6, 0.6);
         downButton.events.onInputOver.add(function(){ buttonDownDown = true; downButton.scale.setTo(0.62, 0.62);});
         downButton.events.onInputOut.add(function(){ buttonDownDown = false; downButton.scale.setTo(0.6, 0.6);});
         downButton.events.onInputDown.add(function(){ buttonDownDown = true; downButton.scale.setTo(0.62, 0.62);});
         downButton.events.onInputUp.add(function(){ buttonDownDown = false; downButton.scale.setTo(0.6, 0.6);});
-
+        //Right Arrow
         rightButton = this.add.button((10.65 * gridsize), (24 * gridsize), 'rights',  null, this, 1,0,1,0);
         rightButton.scale.setTo(0.6, 0.6);
         rightButton.events.onInputOver.add(function(){ buttonRightDown = true; rightButton.scale.setTo(0.62, 0.62);});
         rightButton.events.onInputOut.add(function(){ buttonRightDown = false; rightButton.scale.setTo(0.6, 0.6);});
         rightButton.events.onInputDown.add(function(){ buttonRightDown = true; rightButton.scale.setTo(0.62, 0.62);});
         rightButton.events.onInputUp.add(function(){ buttonRightDown = false; rightButton.scale.setTo(0.6, 0.6);});
-
+        //Left Arrow
         leftButton = this.add.button((6.1 * gridsize), (24 * gridsize), 'lefts',  null, this, 1,0,1,0);
         leftButton.scale.setTo(0.6, 0.6);
         leftButton.events.onInputOver.add(function(){ buttonLeftDown = true; leftButton.scale.setTo(0.62, 0.62);});
@@ -224,17 +255,12 @@ Game.Game.prototype = {
         leftButton.events.onInputDown.add(function(){ buttonLeftDown = true; leftButton.scale.setTo(0.62, 0.62);});
         leftButton.events.onInputUp.add(function(){ buttonLeftDown = false; leftButton.scale.setTo(0.6, 0.6);});
 
+        //this is a dummy button for aesthtics
         var circle = this.add.sprite(( 9.25 * gridsize), (24.60 * gridsize), 'circle', 0);
         circle.scale.setTo(0.4, 0.4);
 
-        var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-        if (mobile) {
-            alert("MOBILE DEVICE!!");
-
-        }
-        else
-        {
-            alert("NOT A MOBILE DEVICE!!");
+        if(!mobile){
+            //disable touchscreen buttons on desktop
             upButton.enabled = false;
             upButton.visible = false;
             downButton.enabled = false;
@@ -244,18 +270,12 @@ Game.Game.prototype = {
             rightButton.enabled = false;
             rightButton.visible = false;
             circle.visible = false;
+
         }
+
+        //create the input keys
         cursors = this.input.keyboard.createCursorKeys();
-
-        // wasd = {
-        //     up : game.input.keyboard.addKey(Phaser.Keyboard.W),
-        //     down: game.input.keyboard.addKey(Phaser.Keyboard.S),
-        //     right: game.input.keyboard.addKey(Phaser.Keyboard.D),
-        //     left: game.input.keyboard.addKey(Phaser.Keyboard.A)
-        // };
-
         this.move(player, player_data);
-        //game.input.onDown.add(this.beginSwipe, this);
 
     },
 
@@ -267,13 +287,16 @@ Game.Game.prototype = {
         this.state.restart(true);
     },
 
+    //updates the timer, ticks every second
     updateCounter : function(){
         time--;
         timeText.text = 'Time Left : ' + time;
-        if(time === 0){
+        if(time === 0)
             this.gameOver();
-        }
+
     },
+
+    //The following funciton is for swiping if ever needed
 
 /*    beginSwipe : function(){
       player_startPosX = this.game.input.worldX;
@@ -308,37 +331,34 @@ Game.Game.prototype = {
     },*/
 
 
+    //checks both the touchscreen and arrow keys for input
     checkKeys: function () {
 
-        //if the left key is pressed and the player not currently facing left
-        if((cursors.left.isDown || buttonLeftDown )  && player_data.current !== Phaser.LEFT){
-
+        if((cursors.left.isDown || buttonLeftDown )  && player_data.current !== Phaser.LEFT)
             this.checkDirection(player, player_data, Phaser.LEFT);
 
-        }else if((cursors.right.isDown || buttonRightDown )  && player_data.current !== Phaser.RIGHT){
-
+        else if((cursors.right.isDown || buttonRightDown )  && player_data.current !== Phaser.RIGHT)
             this.checkDirection(player, player_data, Phaser.RIGHT );
 
-        }else if((cursors.up.isDown || buttonUpDown )  && player_data.current !== Phaser.UP){
-
+        else if((cursors.up.isDown || buttonUpDown )  && player_data.current !== Phaser.UP)
             this.checkDirection(player, player_data, Phaser.UP);
 
-        }else if((cursors.down.isDown  || buttonDownDown )  && player_data.current !== Phaser.DOWN){
-
+        else if((cursors.down.isDown  || buttonDownDown )  && player_data.current !== Phaser.DOWN)
             this.checkDirection(player, player_data, Phaser.DOWN);
-        }
+
     },
 
-
+    //player and enemy movement function
     move: function (sprite, obj){
 
         var speed = obj.speed;
 
+        //if the obj is going left or up, set the speed the negative of the current speed
         if (obj.turning === Phaser.LEFT  || obj.turning === Phaser.UP){
-
             speed = -speed;
         }
 
+        //set the velocity of the obj to the current speed on either the x or y axis
         if (obj.turning === Phaser.LEFT || obj.turning === Phaser.RIGHT ){
             sprite.body.velocity.x = speed;
             sprite.body.velocity.y = 0;
@@ -350,21 +370,17 @@ Game.Game.prototype = {
         sprite.scale.x = 1;
         sprite.angle = 0;
 
+        //sets the animation of the player/enemy to the proper direction
         if(((enemy_data.indexOf(obj) > -1) && (!obj.running)) || obj === player_data) {
-            if(obj.turning === Phaser.RIGHT){
+            if(obj.turning === Phaser.RIGHT)
                 sprite.play('walkRight');
-            }
-            else if(obj.turning === Phaser.LEFT){
+            else if(obj.turning === Phaser.LEFT)
                 sprite.play('walkLeft');
-            }
-            else if(obj.turning === Phaser.UP){
+            else if(obj.turning === Phaser.UP)
                 sprite.play('walkUp');
-            }
-            else if (obj.turning === Phaser.DOWN) {
+            else if (obj.turning === Phaser.DOWN)
                 sprite.play('walkDown');
-            }
         }
-
 
         obj.current = obj.turning;
 
@@ -431,6 +447,7 @@ Game.Game.prototype = {
 
     },
 
+    //handles the collision with the small dot
     eatTreats: function (player, treat){
         //remove the dot
         treat.kill();
@@ -441,23 +458,26 @@ Game.Game.prototype = {
 
     },
 
+    //handle the collsion with the larger dot
     eatSTreats: function (player, treat){
-        //remove the big dot
+        //play a sound effect
         var temp = music.volume;
         music.volume=temp/2
         var sfx = this.add.audio('big_eat_sfx');
         sfx.volume = temp;
         sfx.play('',0,0.5,true);
+
+        //remove the object from the screen
         treat.kill();
+
         this.time.events.add(Phaser.Timer.SECOND/2, function(){
             music.volume = temp;
         });
 
-
-        // TODO
-        // Make a sound or change appearance of player to indicate they have a power-up
+        //stacks the time alloted for the large dots
         player_data.powered_up++;
 
+        //ensures the enemy starts blinking before they become hunters after 3 seconds
         this.time.events.add(Phaser.Timer.SECOND * 3, function() {
            if(player_data.powered_up === 1) {
                for(var i = 0; i < NUM_ENEMIES; i++){
@@ -468,6 +488,7 @@ Game.Game.prototype = {
            }
         });
 
+        //sets the enemies back to the hunters after 4 seconds  (allows for 1 second of blinking)
         this.time.events.add(Phaser.Timer.SECOND * 4, function() {
 
             player_data.powered_up--;
@@ -487,6 +508,7 @@ Game.Game.prototype = {
         score += 50;
         scoreText.text = 'Score: ' + score;
 
+        //sets the enemy to hunted mode
         for(var i =0; i < NUM_ENEMIES; i++) {
             if(enemy_data[i].alive) {
                 enemy_sprites[i].play('run');
@@ -499,13 +521,17 @@ Game.Game.prototype = {
 
             }
         }
-
     },
 
+    //handles the collision between the player and the enemies
     enemyCollision: function (player, enemy){
 
         var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
+
+        //if the enemy is alive and edible and collides with the player
         if(enemy_obj.running && enemy_obj.alive){
+
+            //eat sfx
 			var temp = music.volume;
 			music.volume=temp/2
 			var sfx = this.add.audio('ghost_eat_sfx');
@@ -515,6 +541,7 @@ Game.Game.prototype = {
 				music.volume = temp;
 			});
 
+			//set the enemy to dead, change animation, have them head home for regeneration
             enemy_obj.alive = false;
             enemy.play('dead');
             enemy.speed = DEAD_GHOST_SPEED;
@@ -525,13 +552,20 @@ Game.Game.prototype = {
             scoreText.text = 'Score: ' + score;
 
         }else if(enemy_obj.alive) {
+            //the enemy is alive and in hunter mode and collides with the player, remove 500 points
+            // and call gameover
+            if(score >= 500)
+                score -= 500;
+            else
+                score = 0;
+            scoreText.text = 'Score: ' + score;
             this.gameOver();
         }
     },
 
 
+    //handles the game over event, whether by collision, or by time out
     gameOver: function(game){
-        //TODO Add an animation/sound on enemy collision
 
         //stop the timer
 		var win = this.add.audio('win');
@@ -539,12 +573,6 @@ Game.Game.prototype = {
         timer.stop();
         music.stop();
         gameOver = true;
-
-        //remove the player
-        //player.kill();
-        //for(var i = 0; i < NUM_ENEMIES; i++) {
-        //    enemy_sprites[i].kill();
-        //}
 
         player.body.velocity.x = 0;
         player.body.velocity.y = 0;

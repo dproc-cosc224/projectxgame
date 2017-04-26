@@ -41,7 +41,6 @@ Game.Preloader.resources = {
     'image' : [
         ['dot32', 'assets/img/dot32.png'],
         ['bigDot32', 'assets/img/bigDot32.png'],
-        ['cherry', 'assets/img/cherry.png'],
         ['cTile32', 'assets/img/chompermazetiles32g.png'],
         ['down', 'assets/img/down.png'],
         ['left', 'assets/img/left.png'],
@@ -78,9 +77,8 @@ Game.Preloader.resources = {
     ],
 
     'tilemap': [
-        ['pmap32', 'assets/maps/pmap32.csv']
-
-
+        ['pmap32', 'assets/maps/pmap32.csv'],
+        ['pmapdesk', 'assets/maps/pmapdesk.csv']
 
     ],
 
