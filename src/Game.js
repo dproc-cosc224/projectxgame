@@ -126,6 +126,7 @@ Game.Game.prototype = {
             timeY = 32;
             scoreX = 32;
             scoreY = 32;
+            ghostDenY = 11;
 
         }else{
             //if the game is on desktop/other load the desktop settings
@@ -138,6 +139,7 @@ Game.Game.prototype = {
             timeY = 128;
             scoreX = 32;
             scoreY = 128;
+            ghostDenY= 14;
         }
 
         map.addTilesetImage('cTile32');
