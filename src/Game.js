@@ -552,24 +552,20 @@ Game.Game.prototype = {
 
         var enemy_obj = enemy_data[enemy_sprites.indexOf(enemy)];
         if(enemy_obj.running && enemy_obj.alive){
-			var temp = music.volume;
-			music.volume=temp/2
-			var sfx = this.add.audio('ghost_eat_sfx');
-			sfx.volume = temp;
-			sfx.play('',0,0.5,true);
-			this.time.events.add(Phaser.Timer.SECOND/2, function(){
-				music.volume = temp;
-			});
-
+            var temp = music.volume;
+            music.volume=temp/2
+            var sfx = this.add.audio('ghost_eat_sfx');
+            sfx.volume = temp;
+            sfx.play('',0,0.5,true);
+            this.time.events.add(Phaser.Timer.SECOND/2, function(){
+                music.volume = temp;
+            });
             enemy_obj.alive = false;
             enemy.play('dead');
             enemy.speed = DEAD_GHOST_SPEED;
-
-
             //update the score
             score += 500;
             scoreText.text = 'Score: ' + score;
-
         }else if(enemy_obj.alive) {
             this.gameOver();
         }
@@ -580,7 +576,7 @@ Game.Game.prototype = {
         //TODO Add an animation/sound on enemy collision
 
         //stop the timer
-		var win = this.add.audio('win');
+        var win = this.add.audio('win');
 		win.play('',0,0.5,true);
         timer.stop();
         music.stop();
@@ -598,7 +594,6 @@ Game.Game.prototype = {
             enemy_sprites[i].body.velocity.x = 0;
             enemy_sprites[i].body.velocity.y = 0;
         }
-        
 
         this.black = this.game.add.sprite(0, 0, 'black');
         this.black.alpha = 0.7;
@@ -612,7 +607,7 @@ Game.Game.prototype = {
         this.spark_emitter.width = this.game.world.width * 1.5;
         this.spark_emitter.minRotation = 0;
         this.spark_emitter.maxRotation = 40;
-               
+
         this.cup = this.game.add.sprite(this.world.width/2, (this.world.height + 400), 'cup');
         this.cup.anchor.x = 0.5;
         this.cup.anchor.y = 0.5;
@@ -819,7 +814,7 @@ function enemy_movement_function(game, sprite, obj) {
         // DFS will give you more "random" seeming movement
         // BFS will give you the shortest path between the ghost and pacman
         var current;
-        if(running || obj === enemy_data[0] ){
+        if(obj.alive ^ running){
             //bfs
             current = queue.shift();
         }else{
